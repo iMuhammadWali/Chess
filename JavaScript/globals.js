@@ -85,6 +85,20 @@ export const kingMoves = [
     { row: 1, col: -1 },
     { row: -1, col: 1 }
 ];
+export function ResetChess() {
+    Chess.isBlack = false;
+    Chess.selectedPiece = '';
+    Chess.isPieceSelected = false;
+    Chess.prevRow = 10;
+    Chess.prevCol = 10;
+    Chess.isWhiteKingInCheck = false;
+    Chess.isBlackKingInCheck = false;
+    Chess.hasWhiteKingMoved = false;
+    Chess.hasBlackKingMoved = false;
+    Chess.isCheckmate = false;
+    Chess.isStalemate = false;
+    console.log('Chess object has been reset');
+}
 export const Chess = {
     isBlack: false,
     selectedPiece: '',

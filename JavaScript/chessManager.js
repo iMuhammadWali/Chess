@@ -1,6 +1,7 @@
 import {
     board, Chess, gameBoard, whitePieces, blackPieces,
-    whiteCheckGivingPieces, blackCheckGivingPieces, ResetGameBoard, SetGameBoard
+    whiteCheckGivingPieces, blackCheckGivingPieces, ResetGameBoard, SetGameBoard,
+    ResetChess
 } from "./globals.js";
 import { RemovePreviousMovingOptions, SelectAndDisplayMoves, moveDisplayingFunctions } from "./movesManager.js";
 import { GetPuzzle, correctPuzzleMoves } from "./puzzleManager.js";
@@ -113,7 +114,6 @@ async function HandleClickEvent(event) {
     UpdateBoard();
 }
 function RetriveGamePositionFromLocalStorage() {
-
     let gameBoardJSON = localStorage.getItem('gameBoard');
     SetGameBoard(JSON.parse(gameBoardJSON));
 }
@@ -122,7 +122,6 @@ function DisplayMenu() {
     gameMenu.style.display = 'flex';
 }
 function InitGame(currState) {
-
     menuButtonSound.play();
     game.style.display = 'flex';
     gameMenu.style.display = 'none';
@@ -131,12 +130,11 @@ function InitGame(currState) {
     backgroundMusic.addEventListener('ended', function () {
         backgroundMusic.play();
     });
-
     board.addEventListener('click', HandleClickEvent);
 }
 function StartLocalGame() {
-
     InitGame(GameStates.isLocalGame);
+    ResetChess();
     setTimeout(() => {
         DrawGameBoard();
     }, 50);
@@ -144,7 +142,6 @@ function StartLocalGame() {
     GetAllPiecePositions();
 }
 async function StartPuzzle() {
-
     InitGame(GameStates.isPuzzleGame);
 
     InitializeThreatBoard();
@@ -190,9 +187,6 @@ window.addEventListener('beforeunload', function (event) {
     console.log('Page is about to be unloaded...');
 
 });
-
 document.addEventListener("DOMContentLoaded", () => {
-
-    document.body.click();
     StartGame();
 });

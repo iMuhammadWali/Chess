@@ -59,9 +59,6 @@ const DrawPieceToCapture = (block, i, j) => {
 }
 const UpdateBlock = (block, i, j) => {
     const square = gameBoard[i][j];
-    // // if (block.style.backgroundColor === '#B9CA43' || block.style.backgroundColor === '#F5F682'){
-    //     block.style.backgroundColor = ((i + j) % 2 === 1) ? '#779656' : '#EFEED4';
-    // // }
 
     if (square !== '' &&
         square !== 'validMove' &&
@@ -84,11 +81,7 @@ const CreateBlockNumber = (row, width) => {
     const num = document.createElement('span');
     num.className = 'number';
     num.innerText = (boardDimension - row);
-    // num.style.color = (row % 2 === 0) ? '#779656' : '#EFEED4';
     num.style.color = (row % 2 === 0) ? '#514431' : '#EFEED4';
-
-    // num.style.left = '5px';
-    // num.style.top = '5px';
     let left = (width - ((width/100)*90)) + 'px'; 
     let top = (width - ((width/100)*90)) + 'px'; 
     num.style.height = ((width/100)*0.5);
@@ -184,6 +177,7 @@ export async function DrawPawnPromotionBox(selectedPiece, currRow, currCol) {
     console.log( pawnBox.style.left);
     console.log( pawnBox.style.height);
     console.log( pawnBox.style.width);
+    
     return new Promise(resolve => {
         pawnBox.addEventListener('click', (event) => {
             const target = event.target.closest('div');
