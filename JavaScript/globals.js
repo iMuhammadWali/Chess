@@ -1,0 +1,113 @@
+// export const gameBoard = [
+//     ['', '', '', 'br', 'bk', '', 'br', ''],
+//     ['', '', '', '', '', 'bp', '', ''],
+//     ['wq', '', 'bp', '', 'bp', 'wp', '', ''],
+//     ['', '', '', '', '', '', '', ''],
+//     ['wp', '', '', 'bq', '', '', '', ''],
+//     ['', '', '', '', '', 'bb', 'wb', ''],
+//     ['', 'wp', 'wp', '', 'wb', '', '', 'wp'],
+//     ['', '', '', '', 'wk', '', '', '']
+// ];
+
+// export const gameBoard = [
+//     ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"], 
+//     ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+//     ["", "", "", "", "", "", "", ""],
+//     ["", "", "", "", "", "", "", ""],
+//     ["", "", "", "", "", "", "", ""],
+//     ["", "", "", "", "", "", "", ""],
+//     ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
+//     ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"]
+// ];
+
+export const initialGameBoard = [
+    ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"], 
+    ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
+    ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"]
+];
+
+export let gameBoard = initialGameBoard.map(row => [...row]);
+// export let gameBoard = [...initialGameBoard];
+export function ResetGameBoard() {
+    // Reset gameBoard to a deep copy of initialGameBoard
+    gameBoard = initialGameBoard.map(row => [...row]);
+}
+export function SetGameBoard (board){
+    gameBoard = board;
+}
+
+export const board = document.querySelector('.chessBoard');
+export const pawnBox = document.querySelector('.pawn-promotion');
+export const boardDimension = 8;
+
+export const threatBoard = [];
+
+export const whitePieces = [];
+export const blackPieces = [];
+
+export const whiteCheckGivingPieces = [];
+export const blackCheckGivingPieces = [];
+
+export const bishopMoves = [
+    { row: 1, col: 1 },
+    { row: -1, col: -1 },
+    { row: -1, col: 1 },
+    { row: 1, col: -1 },
+];
+export const rookMoves = [
+    { row: 1, col: 0 },
+    { row: -1, col: 0 },
+    { row: 0, col: 1 },
+    { row: 0, col: -1 },
+];
+export const knightMoves = [
+    { row: 2, col: 1 },
+    { row: 1, col: 2 },
+    { row: -1, col: 2 },
+    { row: -2, col: 1 },
+    { row: -2, col: -1 },
+    { row: -1, col: -2 },
+    { row: 1, col: -2 },
+    { row: 2, col: -1 }
+];
+export const kingMoves = [
+    { row: 1, col: 0 },
+    { row: -1, col: 0 },
+    { row: 1, col: 1 },
+    { row: 0, col: 1 },
+    { row: 0, col: -1 },
+    { row: -1, col: -1 },
+    { row: 1, col: -1 },
+    { row: -1, col: 1 }
+];
+export const Chess = {
+    isBlack: false,
+    selectedPiece: '',
+    isPieceSelected: false,
+    prevRow: 10,
+    prevCol: 10,
+    isWhiteKingInCheck: false,
+    isBlackKingInCheck: false,
+    hasWhiteKingMoved: false,
+    hasBlackKingMoved: false,
+    isCheckmate: false,
+    isStalemate: false
+}
+export const lastMove = {
+    prevRow: 10,
+    prevCol: 10,
+    currRow: 10,
+    currCol: 10,
+    rookPreRow : 10,
+    rookPreCol : 10,
+    rookNewRow : 10,
+    rookOldCol :10
+}
+export const lastMoves = [];
+// Moved from Green to Green #B9CA43
+// Moved from White = #F5F682

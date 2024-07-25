@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Board</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+</head>
+<body>
+    <div class="buttons">
+        <button class = "back-button"></button>
+        <button class = 'sound-on'></button>
+        <button class = 'sound-off'></button>
+    </div>
+    <div class="game">
+        <div class="pawn-promotion"></div>
+        <div class="player">Player-1</div>
+        <div class="chessBoard"></div>
+        <div class="player">Player-2</div>
+    </div>
+    <div class="game-menu">
+        <div class="top">
+            <button class="play" id = "local-play">Play Local Game</button>
+            <button class="play" id = "resume">Resume</button>
+        </div>
+        <div class="bottom">
+            <button class="play" id = "puzzle">Solve Daily Puzzle</button>
+            <button class="play" id = "custom">Input a Custom Game</button>
+        </div>
+ 
+    </div>
+    <script type="module" src="/JavaScript/chessManager.js"></script>
+</body>
+
+</html>
