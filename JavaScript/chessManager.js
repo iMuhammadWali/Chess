@@ -245,5 +245,8 @@ function SaveGameInLocalStorage() {
     DisplayMenu();
     console.log('Page is about to be unloaded...');
 }
-window.addEventListener('beforeunload', SaveGameInLocalStorage());
+window.addEventListener('beforeunload', ()=>{
+    SaveGameInLocalStorage();  
+} 
+);
 document.addEventListener("DOMContentLoaded", StartGame());
