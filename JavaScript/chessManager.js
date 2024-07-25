@@ -130,6 +130,7 @@ function RetriveGamePositionFromLocalStorage() {
     let FEN_JSON = localStorage.getItem('FEN');
     if (!FEN_JSON){
         StartLocalGame();
+        return;
     }
     ParseFEN(FEN_JSON);
     console.log(gameBoard);
