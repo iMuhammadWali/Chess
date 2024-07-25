@@ -212,6 +212,7 @@ async function StartPuzzle() {
 }
 function ResumeGame() {
     GameStates.isResume = true;
+    RemovePreviousMovingOptions();
     EmptyGameBoard();
     InitializeThreatBoard();
     RetriveGamePositionFromLocalStorage();
@@ -222,8 +223,8 @@ function ResumeGame() {
         AddNewThreats(opponent);
         Chess.isBlack = !Chess.isBlack;
     }
+    
     AddOpponentThreatsOnTheCurrentBoard();
-    RemovePreviousMovingOptions();
     StartLocalGame();
 }
 function StartGame() {
