@@ -163,6 +163,7 @@ async function StartPuzzle() {
     await GetPuzzle();
     DrawGameBoard();
     UpdateBoard();
+    DrawTurnName();
 }
 function StartGame() {
 
