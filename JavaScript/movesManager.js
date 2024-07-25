@@ -285,7 +285,7 @@ export function RemovePreviousMovingOptions() {
     for (let i = 0; i < boardDimension; i++) {
         for (let j = 0; j < boardDimension; j++) {
             if (gameBoard[i][j] === "validMove" || gameBoard[i][j] === 'pS')
-                gameBoard[i][j] = "";
+                gameBoard[i][j] = '';
             else if (gameBoard[i][j].includes('capture'))
                 gameBoard[i][j] = gameBoard[i][j].split(':')[1];
         }

@@ -47,8 +47,8 @@ export const threatBoard = [];
 export const whitePieces = [];
 export const blackPieces = [];
 
-export const whiteCheckGivingPieces = [];
-export const blackCheckGivingPieces = [];
+export let whiteCheckGivingPieces = [];
+export let blackCheckGivingPieces = [];
 
 export const bishopMoves = [
     { row: 1, col: 1 },
@@ -95,6 +95,8 @@ export function ResetChess() {
     Chess.isCheckmate = false;
     Chess.isStalemate = false;
     console.log('Chess object has been reset');
+    whiteCheckGivingPieces.length = [];
+    blackCheckGivingPieces.length = [];
 }
 export const Chess = {
     isBlack: false,

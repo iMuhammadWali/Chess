@@ -2,7 +2,8 @@ import {
     board, Chess, gameBoard, whitePieces, blackPieces,
     whiteCheckGivingPieces, blackCheckGivingPieces, ResetGameBoard,
     ResetChess,
-    boardDimension
+    boardDimension,
+    threatBoard
 } from "./globals.js";
 import { RemovePreviousMovingOptions, SelectAndDisplayMoves, moveDisplayingFunctions } from "./movesManager.js";
 import { EmptyGameBoard, GetPuzzle, ParseFEN, correctPuzzleMoves } from "./puzzleManager.js";
@@ -190,6 +191,7 @@ function StartLocalGame() {
     if (!GameStates.isResume) {
         ResetChess();
         ResetGameBoard();
+        InitializeThreatBoard();
     }
     else
         GameStates.isResume = false;
@@ -198,7 +200,7 @@ function StartLocalGame() {
         DrawGameBoard();
     }, 50);
 
-    InitializeThreatBoard();
+   
     GetAllPiecePositions();
 }
 async function StartPuzzle() {
@@ -220,10 +222,9 @@ function ResumeGame() {
     const AddOpponentThreatsOnTheCurrentBoard = () => {
         Chess.isBlack = !Chess.isBlack;
         let opponent = Chess.isBlack ? 'b' : 'w';
-        AddNewThreats(opponent);
+        AddNewThreats('w');
         Chess.isBlack = !Chess.isBlack;
     }
-    
     AddOpponentThreatsOnTheCurrentBoard();
     StartLocalGame();
 }
@@ -252,10 +253,12 @@ function StartGame() {
 
 }
 function SaveGameInLocalStorage() {
+    RemovePreviousMovingOptions();
     let FEN = MakeFen();
     console.log(FEN);
     localStorage.setItem('FEN', JSON.stringify(FEN));
     DisplayMenu();
+    ResetChess(); 
     console.log('Page is about to be unloaded...');
 }
 window.addEventListener('beforeunload', () => {

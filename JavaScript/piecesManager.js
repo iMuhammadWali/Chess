@@ -71,10 +71,6 @@ function RemoveKingFromCheck(){
     else Chess.isWhiteKingInCheck = false;
 }
 const PopulateLastMovesArray = (prevRow, prevCol, currRow, currCol) => {
-    // let block = document.querySelector(`[data-row="${prevRow}"][data-col="${prevCol}"]`);
-    // block.style.backgroundColor = ((prevRow + prevCol) % 2 === 1) ? '#5cd8ee' : '#F5F682';
-    // block = document.querySelector(`[data-row="${currRow}"][data-col="${currCol}"]`);
-    // block.style.backgroundColor = ((currRow + currCol) % 2 === 1) ? '#5cd8ee' : '#F5F682';
     lastMove.prevRow = prevRow;
     lastMove.prevCol = prevCol;
     lastMove.currRow = currRow;
