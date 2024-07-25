@@ -128,6 +128,9 @@ async function HandleClickEvent(event) {
 }
 function RetriveGamePositionFromLocalStorage() {
     let FEN_JSON = localStorage.getItem('FEN');
+    if (!FEN_JSON){
+        StartLocalGame();
+    }
     ParseFEN(FEN_JSON);
     console.log(gameBoard);
 }
@@ -181,7 +184,7 @@ function MakeFen() {
 function StartLocalGame() {
 
     InitGame(GameStates.isLocalGame);
-    if (!GameStates.isResume){
+    if (!GameStates.isResume) {
         ResetChess();
         ResetGameBoard();
     }
@@ -236,7 +239,7 @@ function StartGame() {
     localPlayButton.addEventListener('click', StartLocalGame);
     puzzleButton.addEventListener('click', StartPuzzle);
     resumeButton.addEventListener('click', ResumeGame);
-    
+
 }
 function SaveGameInLocalStorage() {
     let FEN = MakeFen();
@@ -245,8 +248,8 @@ function SaveGameInLocalStorage() {
     DisplayMenu();
     console.log('Page is about to be unloaded...');
 }
-window.addEventListener('beforeunload', ()=>{
-    SaveGameInLocalStorage();  
-} 
+window.addEventListener('beforeunload', () => {
+    SaveGameInLocalStorage();
+}
 );
 document.addEventListener("DOMContentLoaded", StartGame());
