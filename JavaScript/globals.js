@@ -37,9 +37,6 @@ export function ResetGameBoard() {
     // Reset gameBoard to a deep copy of initialGameBoard
     gameBoard = initialGameBoard.map(row => [...row]);
 }
-export function SetGameBoard (fen){
-    parseFEN(fen);
-}
 
 export const board = document.querySelector('.chessBoard');
 export const pawnBox = document.querySelector('.pawn-promotion');

@@ -1,6 +1,6 @@
 import {
     board, Chess, gameBoard, whitePieces, blackPieces,
-    whiteCheckGivingPieces, blackCheckGivingPieces, ResetGameBoard, SetGameBoard,
+    whiteCheckGivingPieces, blackCheckGivingPieces, ResetGameBoard,
     ResetChess,
     boardDimension
 } from "./globals.js";
