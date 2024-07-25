@@ -26,7 +26,7 @@ console.log(backButton);
 const puzzleButton = document.getElementById('puzzle');
 const game = document.querySelector('.game');
 const gameMenu = document.querySelector('.game-menu');
-
+const turnText = document.querySelector('.turn');
 export const PlayedMoves = {
     fullMoveCount: 1,
     halfMoveCount: 0,
@@ -78,6 +78,17 @@ function PlayPuzzleMove() {
     //Find if if that piece can move to that place
     //If it can, move it there
 }
+function DrawTurnName(){
+    if (Chess.isBlack) {
+
+        turnText.textContent = "Black's Turn";
+        turnText.style.color = 'black';
+    }
+    else {
+        turnText.style.color = 'white';
+        turnText.textContent = "White's Turn";
+    }
+}
 async function HandleClickEvent(event) {
 
     const target = event.target.closest('div');
@@ -95,8 +106,9 @@ async function HandleClickEvent(event) {
         await MoveThePiece(Chess.selectedPiece, Chess.prevRow, Chess.prevCol, currRow, currCol);
 
         // if (GameStates.isLocalGame) {
-        //     // Chess.isBlack = !Chess.isBlack;
-        // } else {
+        //     Chess.isBlack = !Chess.isBlack;
+        //  } 
+        //else {
         //     if (IsMoveCorrect()) {
         //         console.log("A Correct Move is Played"); //Convert it to Div
         //     }
@@ -104,12 +116,11 @@ async function HandleClickEvent(event) {
         // }
         Chess.isBlack = !Chess.isBlack;
         if (IsGameOver()) {
-            // if (Chess.isCheckmate) Edit and display the checkmate div
-            // else Stalemate
+
             alert('Game is Over');
             console.log("CheckMate");
         };
-        // Chess.isBlack = !Chess.isBlack;
+        DrawTurnName();
     }
     UpdateBoard();
 }
@@ -122,6 +133,7 @@ function DisplayMenu() {
     gameMenu.style.display = 'flex';
 }
 function InitGame(currState) {
+    DrawTurnName();
     menuButtonSound.play();
     game.style.display = 'flex';
     gameMenu.style.display = 'none';
