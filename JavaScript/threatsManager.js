@@ -90,7 +90,7 @@ const AddPawnThreats = (currRow, currCol, self, opponent) => {
 
             else if (gameBoard[currRow + direction][currCol + 1][1] === 'k' &&
                 gameBoard[currRow + direction][currCol + 1][0] === opponent) {
-
+                console.log("hahaha");
                 PutKingInCheck(self, currRow, currCol);
                 isKingInCheck = true;
             }
