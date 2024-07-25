@@ -86,7 +86,7 @@ body {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     grid-template-rows: repeat(4, 1fr);
-    z-index: 3;
+    z-index: 11;
     box-shadow: 6px 6px 20px 3px #2b2b2b;
     display: none;
 }

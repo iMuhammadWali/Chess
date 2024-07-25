@@ -180,7 +180,10 @@ export async function DrawPawnPromotionBox(selectedPiece, currRow, currCol) {
     pawnBox.style.height = `${blockPosi.height * 4}px`;
     pawnBox.style.width = `${blockPosi.width}px`;
 
-
+    console.log( pawnBox.style.top);
+    console.log( pawnBox.style.left);
+    console.log( pawnBox.style.height);
+    console.log( pawnBox.style.width);
     return new Promise(resolve => {
         pawnBox.addEventListener('click', (event) => {
             const target = event.target.closest('div');
