@@ -98,15 +98,15 @@ const CreateBlockNumber = (row, width) => {
     return num;
 }
 const CreateAlphabet = (col, width) => {
-    const letter = document.createElement('span');
+    const letter = document.createElement('div');
     letter.className = 'letter';
     letter.style.color = (col % 2) ? '#514431' : '#EFEED4';
 
     letter.innerText = String.fromCharCode('a'.charCodeAt(0) + col);
     let left = (width - ((width/100)*20)) + 'px'; 
     let top = (width - ((width/100)*40)) + 'px'; 
-    letter.style.height = ((width/100)*0.5);
-    letter.style.width = ((width/100)*0.5);
+    letter.style.height = ((width/100)*0.3);
+    letter.style.width = ((width/100)*0.3);
     letter.style.left = left;
     letter.style.top = top;
     return letter;
@@ -114,8 +114,6 @@ const CreateAlphabet = (col, width) => {
 export const DrawGameBoard = () => {
 
     board.innerHTML = " ";
-    let number = boardDimension;
-    let alphabet = 'a';
     for (let i = 0; i < boardDimension; i++) {
         for (let j = 0; j < boardDimension; j++) {
             const block = document.createElement('div');
@@ -128,7 +126,6 @@ export const DrawGameBoard = () => {
 
             UpdateBlock(block, i, j);
             board.appendChild(block);
-            // console.log('is the row', i);
             let width = block.getBoundingClientRect().width;
             if (!j) block.appendChild(CreateBlockNumber(i, width));
             if (i === boardDimension - 1) {
@@ -136,7 +133,6 @@ export const DrawGameBoard = () => {
             }
         }
     }
-    // DrawSquareNames();
 }
 export const UpdateBoard = () => {
 

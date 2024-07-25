@@ -216,33 +216,39 @@ body {
         width: 430px;
     }
 
-    .back-button{
+    .back-button {
         width: 40px;
         height: 40px;
     }
-    .sound-on{
+
+    .sound-on {
         width: 40px;
         height: 40px;
     }
-    .sound-off{
+
+    .sound-off {
         width: 40px;
         height: 40px;
     }
-    .play{
+
+    .play {
         width: 280px;
         height: 130px;
         font-size: 20px;
     }
 }
+
 @media (max-width: 630px) {
     .chessBoard {
         height: 400px;
         width: 400px;
     }
-    .top{
+
+    .top {
         margin-top: 50px;
     }
-    .bottom{
+
+    .bottom {
         display: flex;
         flex-direction: column;
     }
@@ -254,6 +260,7 @@ body {
         width: 350px;
     }
 }
+
 @media (max-width: 410px) {
     .chessBoard {
         height: 320px;
@@ -266,11 +273,21 @@ body {
         height: 300px;
         width: 300px;
     }
-    .play{
 
-            width: 250px;
-            height: 120px;
-            font-size: 18px;
+    .play {
+
+        width: 250px;
+        height: 120px;
+        font-size: 18px;
+    }
+    .letter {
+        height: 1px;
+        width: 1px;
+        display: none;
+        /* position: absolute; */
+    }
+    .number{
+        display: none;
     }
 }
 

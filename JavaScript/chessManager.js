@@ -121,15 +121,22 @@ function DisplayMenu() {
     game.style.display = 'none';
     gameMenu.style.display = 'flex';
 }
-function StartLocalGame() {
+function InitGame(currState) {
 
     menuButtonSound.play();
     game.style.display = 'flex';
     gameMenu.style.display = 'none';
-    GameStates.isLocalGame = true;
+    currState = true;
+    backgroundMusic.play();
+    backgroundMusic.addEventListener('ended', function () {
+        backgroundMusic.play();
+    });
 
     board.addEventListener('click', HandleClickEvent);
+}
+function StartLocalGame() {
 
+    InitGame(GameStates.isLocalGame);
     setTimeout(() => {
         DrawGameBoard();
     }, 50);
@@ -138,11 +145,7 @@ function StartLocalGame() {
 }
 async function StartPuzzle() {
 
-    menuButtonSound.play();
-    GameStates.isPuzzleGame = true;
-    game.style.display = 'flex';
-    gameMenu.style.display = 'none';
-    board.addEventListener('click', HandleClickEvent);
+    InitGame(GameStates.isPuzzleGame);
 
     InitializeThreatBoard();
     await GetPuzzle();
@@ -150,13 +153,6 @@ async function StartPuzzle() {
     UpdateBoard();
 }
 function StartGame() {
-
-    backgroundMusic.play();
-    backgroundMusic.addEventListener('ended', function () {
-        backgroundMusic.play();
-    });
-
-    // GameStates.isMainMenu = true;
 
     DisplayMenu();
     backButton.addEventListener('click', () => {
@@ -186,7 +182,17 @@ function StartGame() {
         StartLocalGame();
     })
 }
+window.addEventListener('beforeunload', function (event) {
+    localStorage.setItem('gameBoard', JSON.stringify(gameBoard));
+    ResetGameBoard();
+    menuButtonSound.play();
+    DisplayMenu();
+    console.log('Page is about to be unloaded...');
+
+});
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    document.body.click();
     StartGame();
 });
