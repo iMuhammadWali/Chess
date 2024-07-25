@@ -4,7 +4,7 @@ import { GetAllPiecePositions } from "./boardManager.js";
 import { AddNewThreats } from "./threatsManager.js";
 export let correctPuzzleMoves;
 
-const ParseFEN = (fen) => {
+export const ParseFEN = (fen) => {
     console.log('The fen string for today\'s puzzle is: ', fen);
     let rank = 0;
     let file = 0;
@@ -46,7 +46,7 @@ function isUpperCase(char) {
 function isLowerCase(char) {
     return char === char.toLowerCase() && char !== char.toUpperCase();
 }
-function EmptyGameBoard() {
+export function EmptyGameBoard() {
     for (let i = 0; i < boardDimension; i++) {
         for (let j = 0; j < boardDimension; j++) {
             gameBoard[i][j] = "";
