@@ -134,7 +134,7 @@ export const UpdateBoard = () => {
 
             let block = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
             if (block.style.backgroundColor === 'brown')
-                block.style.backgroundColor = ((i + j) % 2 === 1) ? '#779656' : '#EFEED4';
+                block.style.backgroundColor = ((i + j) % 2 === 1) ? '#9e7a44': '#EFEED4';
             block.innerHTML = '';
             let width = block.getBoundingClientRect().width;
             UpdateBlock(block, i, j);
