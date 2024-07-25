@@ -12,7 +12,8 @@ import { InitializeThreatBoard } from "./threatsManager.js"
 const GameStates = {
     isMainMenu: true,
     isLocalGame: false,
-    isPuzzleGame: false
+    isPuzzleGame: false,
+    isResume: false
 }
 
 const menuButtonSound = new Audio("/assets/highlight.ogg");
@@ -78,7 +79,7 @@ function PlayPuzzleMove() {
     //Find if if that piece can move to that place
     //If it can, move it there
 }
-function DrawTurnName(){
+function DrawTurnName() {
     if (Chess.isBlack) {
 
         turnText.textContent = "Black's Turn";
@@ -145,8 +146,10 @@ function InitGame(currState) {
     board.addEventListener('click', HandleClickEvent);
 }
 function StartLocalGame() {
+
     InitGame(GameStates.isLocalGame);
-    ResetChess();
+    if (!GameStates.isResume)
+        ResetChess();
     setTimeout(() => {
         DrawGameBoard();
     }, 50);
@@ -186,12 +189,13 @@ function StartGame() {
     localPlayButton.addEventListener('click', StartLocalGame);
     puzzleButton.addEventListener('click', StartPuzzle);
     resumeButton.addEventListener('click', () => {
+        GameStates.isResume = true;
         RetriveGamePositionFromLocalStorage();
         RemovePreviousMovingOptions();
         StartLocalGame();
     })
 }
-window.addEventListener('beforeunload', function (event) {
+window.addEventListener('beforeunload', () => {
     localStorage.setItem('gameBoard', JSON.stringify(gameBoard));
     ResetGameBoard();
     menuButtonSound.play();
