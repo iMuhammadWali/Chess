@@ -216,7 +216,13 @@ function ResumeGame() {
     InitializeThreatBoard();
     RetriveGamePositionFromLocalStorage();
     GetAllPiecePositions();
-    AddNewThreats(Chess.isBlack ? 'w' : 'b');
+    const AddOpponentThreatsOnTheCurrentBoard = () => {
+        Chess.isBlack = !Chess.isBlack;
+        let opponent = Chess.isBlack ? 'b' : 'w';
+        AddNewThreats(opponent);
+        Chess.isBlack = !Chess.isBlack;
+    }
+    AddOpponentThreatsOnTheCurrentBoard();
     RemovePreviousMovingOptions();
     StartLocalGame();
 }
