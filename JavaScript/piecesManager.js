@@ -4,6 +4,9 @@ import { AddNewThreats, ResetCurrentPlayerThreats } from "./threatsManager.js";
 import { RemovePreviousMovingOptions, UpdateMoveString, RemovePreviousMoveColors } from "./movesManager.js";
 import { PlayedMoves } from "./chessManager.js";
 import { DrawPawnPromotionBox } from "./boardManager.js";
+const moveSound = new Audio ('/assets/moveSound.mp3');
+const captureSound = new Audio ('/assets/captureSound.mp3');
+const castleSound = new Audio ('/assets/castleSound.mp3');
 
 function RemoveCapturedPieceFromPiecesArray(row, col) {
 
@@ -79,20 +82,21 @@ const PopulateLastMovesArray = (prevRow, prevCol, currRow, currCol) => {
     lastMoves.push(lastMove);
 } 
 export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, currCol) {    
+
+   
     let selfColor = Chess.isBlack ? 'b' : 'w';
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
     let isCapturing = gameBoard[currRow][currCol].includes('capture');
 
     //Check if the move involves capturing an opponent's piece
-    if (isCapturing)
+    if (isCapturing){
         RemoveCapturedPieceFromPiecesArray(currRow, currCol);
-
+    }
     //Update the game board with the moved piece
     if (HasPawnMovedToTheLastRow(selectedPiece, currRow)) {
         selectedPiece = await DrawPawnPromotionBox(selectedPiece, currRow, currCol);
     }
     RemovePreviousMovingOptions();
-    // RemovePreviousMoveColors();
 
     gameBoard[prevRow][prevCol] = '';
     gameBoard[currRow][currCol] = selectedPiece;
@@ -104,7 +108,6 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
     let castlingDirection = DidKingCastle(selectedPiece, prevRow, prevCol, currRow, currCol);
     if (castlingDirection) {
         CastleRook(pieces, castlingDirection);
-
     }
 
     HasKingMoved(selectedPiece);
@@ -129,7 +132,12 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
     PlayedMoves.fullMoves += moveString;
 
     console.log(PlayedMoves.fullMoves);
-    // console.clear();
-    // console.log(gameBoard);
-    // console.log(threatBoard);
+
+    if (isCapturing){
+        captureSound.play();
+    }
+    else if (castlingDirection){
+        castleSound.play();
+    }
+    else  moveSound.play();
 }

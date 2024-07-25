@@ -23,20 +23,20 @@ const CanPreventCheck = (currRow, currCol) => {
 }
 const GetPieceAtPosition = (pieces, currRow, currCol) => {
     return pieces.find(piece => piece.row === currRow && piece.col === currCol);
-};
+}
 const IsKingInCheck = () => {
     return (Chess.isBlackKingInCheck || Chess.isWhiteKingInCheck);
-};
+}
 const IsMoveValid = (piece, i, j) => {
     return gameBoard[i][j] === '' &&
         (IsKingInCheck() ? CanPreventCheck(i, j) : true) &&
         (piece.isPinned ? CanMoveInThePinnedPath(piece, i, j) : true);
-};
+}
 const IsCaptureValid = (piece, i, j, opponent) => {
     return gameBoard[i][j][0] === opponent &&
         (IsKingInCheck() ? CanPreventCheck(i, j) : true) &&
         (piece.isPinned ? CanMoveInThePinnedPath(piece, i, j) : true);
-};
+}
 const CanMoveInThePinnedPath = (piece, currRow, currCol) => {
     for (let move of piece.pinPath) {
         if (move.row === currRow && move.col === currCol) return true;
@@ -94,7 +94,7 @@ const DisplayPawnMovingOptions = (currRow, currCol, isCountingMoves = false) => 
         if (currRow == 6) {
             if (gameBoard[currRow - 2][currCol] == "" && gameBoard[currRow - 1][currCol] === "" &&
                 (isKingInCheck ? CanPreventCheck(currRow - 2, currCol) : true) &&
-                (pawn.isPinned ? CanMoveInThePinnedPath(rook, currRow - 2, currCol) : true)) {
+                (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow - 2, currCol) : true)) {
 
                 if (!isCountingMoves) gameBoard[currRow - 2][currCol] = "validMove";
                 else return 1;
@@ -102,21 +102,21 @@ const DisplayPawnMovingOptions = (currRow, currCol, isCountingMoves = false) => 
         }
         if (gameBoard[currRow - 1][currCol] == "" &&
             (isKingInCheck ? CanPreventCheck(currRow - 1, currCol) : true) &&
-            (pawn.isPinned ? CanMoveInThePinnedPath(rook, currRow - 1, currCol) : true)) {
+            (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow - 1, currCol) : true)) {
 
             if (!isCountingMoves) gameBoard[currRow - 1][currCol] = "validMove";
             else return 1;
         }
         if (currCol + 1 < boardDimension && gameBoard[currRow - 1][currCol + 1].includes('b') &&
             (isKingInCheck ? CanPreventCheck(currRow - 1, currCol + 1) : true) &&
-            (pawn.isPinned ? CanMoveInThePinnedPath(rook, currRow - 1, currCol + 1) : true)) {
+            (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow - 1, currCol + 1) : true)) {
             if (!isCountingMoves)
                 gameBoard[currRow - 1][currCol + 1] = `capture:${gameBoard[currRow - 1][currCol + 1]}`;
             else return 1;
         }
         if (currCol - 1 > 0 && gameBoard[currRow - 1][currCol - 1].includes('b') &&
             (isKingInCheck ? CanPreventCheck(currRow - 1, currCol - 1) : true) &&
-            (pawn.isPinned ? CanMoveInThePinnedPath(rook, currRow - 1, currCol - 1) : true)) {
+            (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow - 1, currCol - 1) : true)) {
             if (!isCountingMoves)
                 gameBoard[currRow - 1][currCol - 1] = `capture:${gameBoard[currRow - 1][currCol - 1]}`;
             else return 1;
