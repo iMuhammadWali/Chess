@@ -129,7 +129,7 @@ async function HandleClickEvent(event) {
 function RetriveGamePositionFromLocalStorage() {
     let FEN_JSON = localStorage.getItem('FEN');
     if (!FEN_JSON){
-        StartLocalGame();
+        // StartLocalGame();
         return;
     }
     ParseFEN(FEN_JSON);
