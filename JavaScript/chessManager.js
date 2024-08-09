@@ -129,7 +129,7 @@ async function HandleClickEvent(event) {
 }
 function RetriveGamePositionFromLocalStorage() {
     let FEN_JSON = localStorage.getItem('FEN');
-    if (!FEN_JSON){
+    if (!FEN_JSON) {
         // StartLocalGame();
         ResetGameBoard();
         // console.log("Whyyy");
@@ -200,7 +200,7 @@ function StartLocalGame() {
         DrawGameBoard();
     }, 50);
 
-   
+
     GetAllPiecePositions();
 }
 async function StartPuzzle() {
@@ -258,7 +258,7 @@ function SaveGameInLocalStorage() {
     console.log(FEN);
     localStorage.setItem('FEN', JSON.stringify(FEN));
     DisplayMenu();
-    ResetChess(); 
+    ResetChess();
     console.log('Page is about to be unloaded...');
 }
 window.addEventListener('beforeunload', () => {

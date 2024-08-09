@@ -95,8 +95,8 @@ export function ResetChess() {
     Chess.isCheckmate = false;
     Chess.isStalemate = false;
     console.log('Chess object has been reset');
-    whiteCheckGivingPieces.length = [];
-    blackCheckGivingPieces.length = [];
+    whiteCheckGivingPieces = [];
+    blackCheckGivingPieces = [];
 }
 export const Chess = {
     isBlack: false,
