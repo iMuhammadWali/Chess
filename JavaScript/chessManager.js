@@ -222,7 +222,7 @@ function ResumeGame() {
     const AddOpponentThreatsOnTheCurrentBoard = () => {
         Chess.isBlack = !Chess.isBlack;
         let opponent = Chess.isBlack ? 'b' : 'w';
-        AddNewThreats('w');
+        AddNewThreats(opponent);
         Chess.isBlack = !Chess.isBlack;
     }
     AddOpponentThreatsOnTheCurrentBoard();
@@ -246,7 +246,9 @@ function StartGame() {
         soundOnButton.style.display = 'block';
         backgroundMusic.play();
     })
-
+    backButton.addEventListener('click', ()=>{
+        backgroundMusic.pause();
+    })
     localPlayButton.addEventListener('click', StartLocalGame);
     puzzleButton.addEventListener('click', StartPuzzle);
     resumeButton.addEventListener('click', ResumeGame);
