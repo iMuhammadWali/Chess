@@ -22,11 +22,13 @@ const menuButtonSound = new Audio("/assets/highlight.ogg");
 const backgroundMusic = new Audio("/assets/backgroundMusic.ogg");
 const localPlayButton = document.getElementById('local-play');
 const resumeButton = document.getElementById('resume');
+const puzzleButton = document.getElementById('puzzle');
+const botButton = document.getElementById('bot');
+
 const backButton = document.querySelector('.back-button');
 const soundOnButton = document.querySelector('.sound-on');
 const soundOffButton = document.querySelector('.sound-off');
 console.log(backButton);
-const puzzleButton = document.getElementById('puzzle');
 const game = document.querySelector('.game');
 const gameMenu = document.querySelector('.game-menu');
 const turnText = document.querySelector('.turn');
@@ -130,9 +132,7 @@ async function HandleClickEvent(event) {
 function RetriveGamePositionFromLocalStorage() {
     let FEN_JSON = localStorage.getItem('FEN');
     if (!FEN_JSON) {
-        // StartLocalGame();
         ResetGameBoard();
-        // console.log("Whyyy");
         return;
     }
     ParseFEN(FEN_JSON);
@@ -246,7 +246,7 @@ function StartGame() {
         soundOnButton.style.display = 'block';
         backgroundMusic.play();
     })
-    backButton.addEventListener('click', ()=>{
+    backButton.addEventListener('click', () => {
         backgroundMusic.pause();
     })
     localPlayButton.addEventListener('click', StartLocalGame);
