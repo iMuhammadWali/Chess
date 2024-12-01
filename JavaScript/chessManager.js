@@ -17,7 +17,8 @@ const GameStates = {
     isMainMenu: true,
     isLocalGame: false,
     isPuzzleGame: false,
-    isResume: false
+    isResume: false,
+    isBot:false,
 }
 
 const menuButtonSound = new Audio("/assets/highlight.ogg");
@@ -155,8 +156,10 @@ async function HandleClickEvent(event) {
             alert('Game is Over');
             console.log("CheckMate");
         };
-        UpdateBoard();
-        await PlayTheBotMove();
+        if (GameStates.isBot){
+            UpdateBoard();
+            await PlayTheBotMove();
+        }
         DrawTurnName();
     }
     UpdateBoard();
@@ -268,7 +271,10 @@ function StartGame() {
         backgroundMusic.pause();
         DisplayMenu();
         ResetChess();
-
+        GameStates.isLocalGame = false;
+        GameStates.isPuzzleGame = false;
+        GameStates.isResume = false;
+        GameStates.isBot = false;
         //console.log('Page is about to be unloaded...');
 
         // the currentRow of the last move is the place where the piece was moved 
@@ -294,7 +300,10 @@ function StartGame() {
     localPlayButton.addEventListener('click', StartLocalGame);
     puzzleButton.addEventListener('click', StartPuzzle);
     resumeButton.addEventListener('click', ResumeGame);
-
+    botButton.addEventListener('click', () => {
+        GameStates.isBot = true;
+        StartLocalGame();
+    });
 }
 function SaveGameInLocalStorage() {
     RemovePreviousMovingOptions();

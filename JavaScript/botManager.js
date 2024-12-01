@@ -46,12 +46,14 @@ async function MiniMax(depth, isMaximizingPlayer, alpha, beta) {
         }
         return bestValue;
     } else {
+        console.log('minimizing player');
         let worstValue = Infinity;
         for (let move of allMoves) {
             const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
             const clonedPieces = JSON.parse(JSON.stringify(pieces));
             const clonedThreatBoard = JSON.parse(JSON.stringify(threatBoard));
             const clonedChess = JSON.parse(JSON.stringify(Chess));
+            
             await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
             Chess.isBlack = !Chess.isBlack;
 
