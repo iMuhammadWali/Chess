@@ -3,12 +3,13 @@ import {
     whiteCheckGivingPieces, blackCheckGivingPieces, ResetGameBoard,
     ResetChess,
     boardDimension,
-    threatBoard
+    threatBoard,
+    lastMoves
 } from "./globals.js";
-import { RemovePreviousMovingOptions, SelectAndDisplayMoves, moveDisplayingFunctions } from "./movesManager.js";
+import { GenerateMovesFromCurrentPosition, RemovePreviousMovingOptions, SelectAndDisplayMoves, moveDisplayingFunctions } from "./movesManager.js";
 import { EmptyGameBoard, GetPuzzle, ParseFEN, correctPuzzleMoves } from "./puzzleManager.js";
 import { DrawGameBoard, UpdateBoard, GetAllPiecePositions, DrawPawnPromotionBox } from "./boardManager.js"
-import { MoveThePiece } from "./piecesManager.js"
+import { MoveThePiece, UndoTheMove } from "./piecesManager.js"
 import { AddNewThreats, InitializeThreatBoard } from "./threatsManager.js"
 
 const GameStates = {
@@ -94,6 +95,43 @@ function DrawTurnName() {
         turnText.textContent = "White's Turn";
     }
 }
+
+async function PlayNextMoves(depth = 2) {
+    if (depth === 0) return;
+
+    async function sleep() {
+        return new Promise(resolve => setTimeout(resolve, 10));
+    }
+
+    const pieces = Chess.isBlack ? blackPieces : whitePieces;
+
+    let allMoves = GenerateMovesFromCurrentPosition();
+    for (let move of allMoves) {
+        const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
+        const clonedPieces = JSON.parse(JSON.stringify(pieces));
+
+        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
+        console.log(move);
+
+        Chess.isBlack = !Chess.isBlack; 
+        UpdateBoard(); 
+        await PlayNextMoves(depth - 1);
+        Chess.isBlack = !Chess.isBlack; 
+
+        await sleep();
+
+        Object.assign(pieces, clonedPieces);
+        for (let i = 0; i < clonedBoard.length; i++) {
+            for (let j = 0; j < clonedBoard[i].length; j++) {
+                gameBoard[i][j] = clonedBoard[i][j];
+            }
+        }
+
+        UpdateBoard();
+        await sleep();
+    }
+}
+
 async function HandleClickEvent(event) {
 
     const target = event.target.closest('div');
@@ -108,8 +146,9 @@ async function HandleClickEvent(event) {
         SelectAndDisplayMoves(piece, currRow, currCol);
     }
     else if (Chess.isPieceSelected && (piece.includes('validMove') || piece.includes('capture'))) {
-        await MoveThePiece(Chess.selectedPiece, Chess.prevRow, Chess.prevCol, currRow, currCol);
 
+        await MoveThePiece(Chess.selectedPiece, Chess.prevRow, Chess.prevCol, currRow, currCol);
+        await PlayNextMoves(3);
         // if (GameStates.isLocalGame) {
         //     Chess.isBlack = !Chess.isBlack;
         //  } 
@@ -229,26 +268,34 @@ function ResumeGame() {
     StartLocalGame();
 }
 function StartGame() {
-
     DisplayMenu();
     backButton.addEventListener('click', () => {
         SaveGameInLocalStorage();
-        menuButtonSound.play();
-
+        ///menuButtonSound.play();
+        ///backgroundMusic.pause();
+        //DisplayMenu();
+        //ResetChess();
+        // the currentRow of the last move is the place where the piece was moved 
+        let lastMove = lastMoves.pop();
+        console.log('last Move', lastMove);
+        if (!lastMove) {
+            return;
+        }
+        UndoTheMove(lastMove.movedPiece, lastMove.capturedPiece, lastMove.currRow, lastMove.currCol, lastMove.prevRow, lastMove.prevCol);
+        UpdateBoard();
+        DrawTurnName();
+        //console.log('Page is about to be unloaded...');
     });
     soundOnButton.addEventListener('click', () => {
         soundOnButton.style.display = 'none';
         soundOffButton.style.display = 'block';
         backgroundMusic.pause();
-    })
+    });
     soundOffButton.addEventListener('click', () => {
         soundOffButton.style.display = 'none';
         soundOnButton.style.display = 'block';
         backgroundMusic.play();
-    })
-    backButton.addEventListener('click', () => {
-        backgroundMusic.pause();
-    })
+    });
     localPlayButton.addEventListener('click', StartLocalGame);
     puzzleButton.addEventListener('click', StartPuzzle);
     resumeButton.addEventListener('click', ResumeGame);
@@ -259,9 +306,6 @@ function SaveGameInLocalStorage() {
     let FEN = MakeFen();
     console.log(FEN);
     localStorage.setItem('FEN', JSON.stringify(FEN));
-    DisplayMenu();
-    ResetChess();
-    console.log('Page is about to be unloaded...');
 }
 window.addEventListener('beforeunload', () => {
     SaveGameInLocalStorage();

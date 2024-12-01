@@ -30,7 +30,16 @@ export const initialGameBoard = [
     ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
     ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"]
 ];
-
+// export const initialGameBoard = [
+//     ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"], 
+//     ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+//     ["", "", "", "", "", "", "", ""],
+//     ["", "", "", "", "", "", "", ""],
+//     ["", "", "", "", "", "", "", ""],
+//     ["", "", "", "", "", "", "", ""],
+//     ["", "", "", "", "", "", "", ""],
+//     ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"]
+// ];
 export let gameBoard = initialGameBoard.map(row => [...row]);
 // export let gameBoard = [...initialGameBoard];
 export function ResetGameBoard() {
@@ -116,11 +125,9 @@ export const lastMove = {
     prevCol: 10,
     currRow: 10,
     currCol: 10,
-    rookPreRow : 10,
-    rookPreCol : 10,
-    rookNewRow : 10,
-    rookOldCol :10
+    movedPiece: "",
+    capturedPiece: "",
 }
-export const lastMoves = [];
+export let lastMoves = [];
 // Moved from Green to Green #B9CA43
 // Moved from White = #F5F682

@@ -48,9 +48,8 @@ const HandleNonEmptySquare = (i, j, row, col, currRow, currCol, self, opponent) 
                 //Find the opponent Piece
                 let pieces = Chess.isBlack ? whitePieces : blackPieces;
                 let piece = pieces.find(piece => piece.row === i && piece.col === j);
-
+                console.log ('pinning piece', piece , ' at  ', i, ' and col', j);
                 PinPiece(piece, i, j);
-
 
                 //Back track the pinning Path
                 for (let x = k - row, y = l - col; x + row !== currRow || y + col !== currCol;) {
@@ -90,7 +89,6 @@ const AddPawnThreats = (currRow, currCol, self, opponent) => {
 
             else if (gameBoard[currRow + direction][currCol + 1][1] === 'k' &&
                 gameBoard[currRow + direction][currCol + 1][0] === opponent) {
-                console.log("hahaha");
                 PutKingInCheck(self, currRow, currCol);
                 isKingInCheck = true;
             }
@@ -243,6 +241,7 @@ export function AddNewThreats(self) {
         let col = pieces[i].col;
 
         let piece = gameBoard[row][col];
+        // console.log(piece, 'is the piece to add the threats and its rows and cols are', row, col);
         threatFunctions[piece[1]](row, col, self, opponent)
     }
 }
