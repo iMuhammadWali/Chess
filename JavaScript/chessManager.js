@@ -271,10 +271,7 @@ function StartGame() {
         backgroundMusic.pause();
         DisplayMenu();
         ResetChess();
-        GameStates.isLocalGame = false;
-        GameStates.isPuzzleGame = false;
-        GameStates.isResume = false;
-        GameStates.isBot = false;
+
         //console.log('Page is about to be unloaded...');
 
         // the currentRow of the last move is the place where the piece was moved 
