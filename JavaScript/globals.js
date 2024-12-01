@@ -8,7 +8,7 @@ export const initialGameBoard = [
     ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
     ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"]
 ];
-export const gameBoard = initialGameBoard.map(row => [...row]);
+export let gameBoard = initialGameBoard.map(row => [...row]);
 // export let gameBoard = [...initialGameBoard];
 export function ResetGameBoard() {
     // Reset gameBoard to a deep copy of initialGameBoard
@@ -71,7 +71,6 @@ export function ResetChess() {
     Chess.hasBlackKingMoved = false;
     Chess.isCheckmate = false;
     Chess.isStalemate = false;
-    console.log('Chess object has been reset');
     whiteCheckGivingPieces = [];
     blackCheckGivingPieces = [];
 }
