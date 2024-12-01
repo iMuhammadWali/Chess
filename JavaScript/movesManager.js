@@ -1,6 +1,6 @@
 import {
     Chess, gameBoard, boardDimension, threatBoard, whitePieces, blackPieces,
-    bishopMoves, rookMoves, knightMoves, kingMoves, blackCheckGivingPieces, whiteCheckGivingPieces, lastMove
+    bishopMoves, rookMoves, knightMoves, kingMoves, blackCheckGivingPieces, whiteCheckGivingPieces,
 } from "./globals.js";
 import { PlayedMoves } from "./chessManager.js";
 //----------------------------[Helper Functions for Displaying a move]---------------------------------------//

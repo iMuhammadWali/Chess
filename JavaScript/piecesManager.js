@@ -1,4 +1,4 @@
-import { Chess, gameBoard, boardDimension, whitePieces, blackPieces, lastMove, lastMoves, threatBoard }
+import { Chess, gameBoard, boardDimension, whitePieces, blackPieces, lastMoves, threatBoard }
     from "./globals.js";
 import { AddNewThreats, ResetCurrentPlayerThreats } from "./threatsManager.js";
 import { RemovePreviousMovingOptions, UpdateMoveString, RemovePreviousMoveColors } from "./movesManager.js";
@@ -8,7 +8,7 @@ const moveSound = new Audio ('/assets/moveSound.mp3');
 const captureSound = new Audio ('/assets/captureSound.mp3');
 const castleSound = new Audio ('/assets/castleSound.mp3');
 
-function RemoveCapturedPieceFromPiecesArray(row, col) {
+export function RemoveCapturedPieceFromPiecesArray(row, col) {
 
     let opponentPieces = Chess.isBlack ? whitePieces : blackPieces;
     let index = opponentPieces.findIndex(piece => piece.row === row && piece.col === col);
@@ -89,7 +89,6 @@ const PopulateLastMovesArray = (prevRow, prevCol, currRow, currCol, capturedPiec
         movedPiece: gameBoard[prevRow][prevCol],
         hasKingMoved: hasKingMoved,
     }
-    console.log('The last movedPiece:', lastMove.movedPiece, 'was moved from', prevRow, prevCol, 'to', currRow, currCol);
     lastMoves.push(lastMove);
 } 
 function AddCapturedPieceBackToPiecesArray(capturedPiece, fromRow, fromCol) {
@@ -161,9 +160,6 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
     PopulateLastMovesArray(prevRow, prevCol, currRow, currCol, capturedPiece, hasKingMoved);
     
     gameBoard[prevRow][prevCol] = '';
-    console.log('The selected piece is:', selectedPiece);
-    console.log('prevRow:', prevRow, 'prevCol:', prevCol, 'currRow:', currRow, 'currCol:', currCol);
-
     gameBoard[currRow][currCol] = selectedPiece;
 
     //Remove all other options to move and Update the position in its respective pieces array

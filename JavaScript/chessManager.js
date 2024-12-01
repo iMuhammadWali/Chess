@@ -11,6 +11,7 @@ import { EmptyGameBoard, GetPuzzle, ParseFEN, correctPuzzleMoves } from "./puzzl
 import { DrawGameBoard, UpdateBoard, GetAllPiecePositions, DrawPawnPromotionBox } from "./boardManager.js"
 import { MoveThePiece, UndoTheMove } from "./piecesManager.js"
 import { AddNewThreats, InitializeThreatBoard } from "./threatsManager.js"
+import  PlayTheBotMove from "./botManager.js";
 
 const GameStates = {
     isMainMenu: true,
@@ -148,22 +149,14 @@ async function HandleClickEvent(event) {
     else if (Chess.isPieceSelected && (piece.includes('validMove') || piece.includes('capture'))) {
 
         await MoveThePiece(Chess.selectedPiece, Chess.prevRow, Chess.prevCol, currRow, currCol);
-        await PlayNextMoves(3);
-        // if (GameStates.isLocalGame) {
-        //     Chess.isBlack = !Chess.isBlack;
-        //  } 
-        //else {
-        //     if (IsMoveCorrect()) {
-        //         console.log("A Correct Move is Played"); //Convert it to Div
-        //     }
-        //     // Chess.isBlack = !Chess.isBlack;
-        // }
         Chess.isBlack = !Chess.isBlack;
         if (IsGameOver()) {
 
             alert('Game is Over');
             console.log("CheckMate");
         };
+        UpdateBoard();
+        await PlayTheBotMove();
         DrawTurnName();
     }
     UpdateBoard();

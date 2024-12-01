@@ -232,7 +232,6 @@ export const ResetCurrentPlayerThreats = () => {
     }
 }
 export function AddNewThreats(self) {
-
     let opponent = Chess.isBlack ? 'w' : 'b';
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
 

@@ -120,14 +120,6 @@ export const Chess = {
     isCheckmate: false,
     isStalemate: false
 }
-export const lastMove = {
-    prevRow: 10,
-    prevCol: 10,
-    currRow: 10,
-    currCol: 10,
-    movedPiece: "",
-    capturedPiece: "",
-}
 export let lastMoves = [];
 // Moved from Green to Green #B9CA43
 // Moved from White = #F5F682
