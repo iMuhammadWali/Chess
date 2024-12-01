@@ -271,20 +271,22 @@ function StartGame() {
     DisplayMenu();
     backButton.addEventListener('click', () => {
         SaveGameInLocalStorage();
-        ///menuButtonSound.play();
-        ///backgroundMusic.pause();
-        //DisplayMenu();
-        //ResetChess();
-        // the currentRow of the last move is the place where the piece was moved 
-        let lastMove = lastMoves.pop();
-        console.log('last Move', lastMove);
-        if (!lastMove) {
-            return;
-        }
-        UndoTheMove(lastMove.movedPiece, lastMove.capturedPiece, lastMove.currRow, lastMove.currCol, lastMove.prevRow, lastMove.prevCol);
-        UpdateBoard();
-        DrawTurnName();
+        menuButtonSound.play();
+        backgroundMusic.pause();
+        DisplayMenu();
+        ResetChess();
+
         //console.log('Page is about to be unloaded...');
+
+        // the currentRow of the last move is the place where the piece was moved 
+        // let lastMove = lastMoves.pop();
+        // console.log('last Move', lastMove);
+        // if (!lastMove) {
+        //     return;
+        // }
+        // UndoTheMove(lastMove.movedPiece, lastMove.capturedPiece, lastMove.currRow, lastMove.currCol, lastMove.prevRow, lastMove.prevCol);
+        // UpdateBoard();
+        // DrawTurnName();
     });
     soundOnButton.addEventListener('click', () => {
         soundOnButton.style.display = 'none';
