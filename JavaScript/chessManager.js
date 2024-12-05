@@ -40,11 +40,15 @@ export const PlayedMoves = {
     halfMoveCount: 0,
     fullMoves: ''
 }
-function IsGameOver() {
+export function IsGameOver() {
 
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
     let RemainingMoveCount = 0;
     let isKingInCheck = Chess.isBlack ? Chess.isBlackKingInCheck : Chess.isWhiteKingInCheck;
+    if (!isKingInCheck){
+        return;
+    }
+    console.log
     let checkGivingPieces = Chess.isBlack ? whiteCheckGivingPieces : blackCheckGivingPieces;
 
     for (let i = 0; i < pieces.length; i++) {
@@ -86,7 +90,7 @@ function PlayPuzzleMove() {
     //Find if if that piece can move to that place
     //If it can, move it there
 }
-function DrawTurnName() {
+export function DrawTurnName() {
     if (Chess.isBlack) {
 
         turnText.textContent = "Black's Turn";
@@ -97,20 +101,17 @@ function DrawTurnName() {
         turnText.textContent = "White's Turn";
     }
 }
+async function sleep() {
+    return new Promise(resolve => setTimeout(resolve, 10));
+}
 
 async function PlayNextMoves(depth = 2) {
     if (depth === 0) return;
 
-    async function sleep() {
-        return new Promise(resolve => setTimeout(resolve, 10));
-    }
-
-    const pieces = Chess.isBlack ? blackPieces : whitePieces;
-
     let allMoves = GenerateMovesFromCurrentPosition();
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
-        const clonedPieces = JSON.parse(JSON.stringify(pieces));
+        //const clonedPieces = JSON.parse(JSON.stringify(pieces));
 
         await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
         console.log(move);
@@ -122,12 +123,14 @@ async function PlayNextMoves(depth = 2) {
 
         await sleep();
 
-        Object.assign(pieces, clonedPieces);
         for (let i = 0; i < clonedBoard.length; i++) {
             for (let j = 0; j < clonedBoard[i].length; j++) {
                 gameBoard[i][j] = clonedBoard[i][j];
             }
         }
+        GetAllPiecePositions();
+        AddNewThreats('w');
+        AddNewThreats('b');
 
         UpdateBoard();
         await sleep();
@@ -140,8 +143,6 @@ async function HandleClickEvent(event) {
     let currRow = parseInt(target.dataset.row);
     let currCol = parseInt(target.dataset.col);
 
-    console.log(`Clicked at row: ${currRow} and col: ${currCol}`);
-
     let piece = gameBoard[currRow][currCol];
 
     if (piece !== '' && piece !== 'validMove' && !piece.includes('capture')) {
@@ -151,10 +152,10 @@ async function HandleClickEvent(event) {
 
         await MoveThePiece(Chess.selectedPiece, Chess.prevRow, Chess.prevCol, currRow, currCol);
         Chess.isBlack = !Chess.isBlack;
+        UpdateBoard();
+        //PlayNextMoves();
         if (IsGameOver()) {
-
             alert('Game is Over');
-            console.log("CheckMate");
         };
         if (GameStates.isBot){
             UpdateBoard();

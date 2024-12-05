@@ -1,4 +1,5 @@
 import { board, Chess, gameBoard, pawnBox, boardDimension, whitePieces, blackPieces } from "./globals.js";
+import {DrawTurnName } from "./chessManager.js";
 
 export const GetAllPiecePositions = () => {
 
@@ -128,7 +129,7 @@ export const DrawGameBoard = () => {
     }
 }
 export const UpdateBoard = () => {
-
+    DrawTurnName();
     for (let i = 0; i < boardDimension; i++) {
         for (let j = 0; j < boardDimension; j++) {
 

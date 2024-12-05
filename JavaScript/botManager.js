@@ -1,145 +1,148 @@
-import { Chess } from "./globals.js";
+import { boardDimension, Chess } from "./globals.js";
 import { GenerateMovesFromCurrentPosition } from "./movesManager.js";
 import { MoveThePiece } from "./piecesManager.js";
 import { gameBoard } from "./globals.js";
 import { blackPieces, whitePieces } from "./globals.js";
-import { AddNewThreats, InitializeThreatBoard } from "./threatsManager.js";
+import { AddNewThreats, InitializeThreatBoard, ResetCurrentPlayerThreats } from "./threatsManager.js";
 import { threatBoard } from "./globals.js";
 import { RemoveCapturedPieceFromPiecesArray } from './piecesManager.js';
-async function MiniMax(depth, isMaximizingPlayer, alpha, beta) {
+
+import { GetAllPiecePositions, UpdateBoard } from './boardManager.js';
+import { IsGameOver } from "./chessManager.js";
+
+async function sleep() {
+    return new Promise(resolve => setTimeout(resolve, 10));
+}
+
+// I do believe that all the problems are fixed. However, If they are not, I will not run away from them and will fix them for sure.
+
+async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infinity) {
     if (depth == 0) {
         return EvaluateBoard();
     }
-
     let allMoves = GenerateMovesFromCurrentPosition();
-    let pieces = Chess.isBlack ? blackPieces : whitePieces;
-
-    if (isMaximizingPlayer) {
-        let bestValue = -Infinity;
-        for (let move of allMoves) {
-            const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
-            const clonedPieces = JSON.parse(JSON.stringify(pieces));
-            const clonedThreatBoard = JSON.parse(JSON.stringify(threatBoard));
-            const clonedChess = JSON.parse(JSON.stringify(Chess));
-
-            await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
-            Chess.isBlack = !Chess.isBlack;
-
-            let currentValue = await MiniMax(depth - 1, false, alpha, beta);
-            Chess.isBlack = !Chess.isBlack;
-
-            Object.assign(pieces, clonedPieces);
-            for (let i = 0; i < clonedBoard.length; i++) {
-                for (let j = 0; j < clonedBoard[i].length; j++) {
-                    gameBoard[i][j] = clonedBoard[i][j];
-                }
-            }
-            for (let i = 0; i < clonedThreatBoard.length; i++) {
-                for (let j = 0; j < clonedThreatBoard[i].length; j++) {
-                    threatBoard[i][j] = clonedThreatBoard[i][j];
-                }
-            }
-            Object.assign(Chess, clonedChess);
-            bestValue = Math.max(bestValue, currentValue);
-            alpha = Math.max(alpha, bestValue);
-            if (beta <= alpha) break;
-        }
-        return bestValue;
-    } else {
-        console.log('minimizing player');
-        let worstValue = Infinity;
-        for (let move of allMoves) {
-            const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
-            const clonedPieces = JSON.parse(JSON.stringify(pieces));
-            const clonedThreatBoard = JSON.parse(JSON.stringify(threatBoard));
-            const clonedChess = JSON.parse(JSON.stringify(Chess));
-            
-            await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
-            Chess.isBlack = !Chess.isBlack;
-
-            let currentValue = await MiniMax(depth - 1, true, alpha, beta);
-            Chess.isBlack = !Chess.isBlack;
-
-            Object.assign(pieces, clonedPieces);
-            for (let i = 0; i < clonedBoard.length; i++) {
-                for (let j = 0; j < clonedBoard[i].length; j++) {
-                    gameBoard[i][j] = clonedBoard[i][j];
-                }
-            }
-            for (let i = 0; i < clonedThreatBoard.length; i++) {
-                for (let j = 0; j < clonedThreatBoard[i].length; j++) {
-                    threatBoard[i][j] = clonedThreatBoard[i][j];
-                }
-            }
-            Object.assign(Chess, clonedChess);
-            worstValue = Math.min(worstValue, currentValue);
-            beta = Math.min(beta, worstValue);
-            if (beta <= alpha) break;
-        }
-        return worstValue;
-    }
-}
-
-function EvaluateBoard() {
-
-    // Count the number of pieces on the board
-    let whitePieces = 0;
-    let blackPieces = 0;
-    for (let i = 0; i < 8; i++) {
-        for (let j = 0; j < 8; j++) {
-            if (gameBoard[i][j] != "") {
-                if (gameBoard[i][j].charAt(0) == "w") {
-                    whitePieces++;
-                }
-                else {
-                    blackPieces++;
-                }
-            }
-        }
-    }
-    if (whitePieces == 0) return Infinity;
-    if (blackPieces == 0) return -Infinity;
-    return blackPieces - whitePieces;
-}
-export default async function PlayTheBotMove(){
-    let allMoves = GenerateMovesFromCurrentPosition();
-    let bestMove = {}
-    let pieces = Chess.isBlack ? blackPieces : whitePieces;
-    let bestVal = -Infinity;
+    let bestEval = null;
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
-        const clonedPieces = JSON.parse(JSON.stringify(pieces));
-        const clonedThreatBoard = JSON.parse(JSON.stringify(threatBoard));
-        const clonedChess = JSON.parse(JSON.stringify(Chess));
-        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
-        let miniMax = await MiniMax(1, true, -Infinity, Infinity);
 
-        Object.assign(pieces, clonedPieces);
+        if (gameBoard[move.toRow][move.toCol] !== "") {
+            // This is the only problem left. Fixed. Prolly the problems I faced earlier were also the same.
+            if (gameBoard[move.toRow][move.toCol] === "bk"){
+                return -Infinity;
+            }
+            if (gameBoard[move.toRow][move.toCol] === "wk"){
+                return Infinity;
+            }
+            //RemoveCapturedPieceFromPiecesArray(move.toRow, move.toCol);
+            gameBoard[move.toRow][move.toCol]+= "capture:" + gameBoard[move.toRow][move.toCol];
+        }
+
+        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
+        console.log(move);
+
+        Chess.isBlack = !Chess.isBlack;
+        //UpdateBoard(); 
+        if (isMaximizingPlayer) bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, alpha, -Infinity);
+        else bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, Infinity, beta);
+
+        Chess.isBlack = !Chess.isBlack;
+        //await sleep();
         for (let i = 0; i < clonedBoard.length; i++) {
             for (let j = 0; j < clonedBoard[i].length; j++) {
                 gameBoard[i][j] = clonedBoard[i][j];
             }
         }
-        for (let i = 0; i < clonedThreatBoard.length; i++) {
-            for (let j = 0; j < clonedThreatBoard[i].length; j++) {
-                threatBoard[i][j] = clonedThreatBoard[i][j];
+        // I should prolly also clone the chess Object for the kings in check.
+        // Or do I need to reset the current player threats ? 
+        GetAllPiecePositions();
+        AddNewThreats('w');
+        AddNewThreats('b');
+
+        if (isMaximizingPlayer) {
+            bestEval = Math.max(bestEval, bestEval);
+            alpha = Math.max(alpha, bestEval);
+        }
+        else {
+            bestEval = Math.min(bestEval, bestEval);
+            beta = Math.min(beta, bestEval);
+        }
+        if (beta <= alpha) {
+            break;
+        }
+    }
+    return bestEval;
+}
+function EvaluateBoard() {
+    // I need to take the postiion of the peices into account as well.
+
+    let whiteScore = 0;
+    let blackScore = 0;
+    
+    for (let i = 0; i < boardDimension; ++i) {
+        for (let j = 0; j < boardDimension; ++j) {
+            if (gameBoard[i][j].startsWith('w')) {
+                let pieceType = gameBoard[i][j][1];
+                if (pieceType === 'p') whiteScore+= 1;
+                else if (pieceType === 'r') whiteScore+= 5;
+                else if (pieceType === 'n') whiteScore+= 3;
+                else if (pieceType === 'b') whiteScore+= 3;
+                else if (pieceType === 'q') whiteScore+= 9;
+                else if (pieceType === 'k') whiteScore+= 100;
+            }
+            if (gameBoard[i][j].startsWith('b')) {
+                let pieceType = gameBoard[i][j][1];
+                if (pieceType === 'p') blackScore+= 1;
+                else if (pieceType === 'r') blackScore+= 5;
+                else if (pieceType === 'n') blackScore+= 3;
+                else if (pieceType === 'b') blackScore+= 3;
+                else if (pieceType === 'q') blackScore+= 9;
+                else if (pieceType === 'k') blackScore+= 100;
             }
         }
-        Object.assign(Chess, clonedChess);
-        if (miniMax > bestVal) {
-            bestVal = miniMax;
-            bestMove = move;
+    }
+    blackScore*= -1;
+    return blackScore - whiteScore;
+}
+export default async function PlayTheBotMove() {
+
+    let allMoves = GenerateMovesFromCurrentPosition();
+    let alpha = -Infinity;
+    let beta = Infinity;
+    let currBestMove = {};
+    let currEval = -100;
+    let bestEval = -Infinity;
+    for (let move of allMoves) {
+        const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
+
+        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
+        console.log(move);
+
+        Chess.isBlack = !Chess.isBlack;
+        UpdateBoard();
+        //await sleep();
+        currEval = await MiniMax(3, false, alpha, beta);
+
+        Chess.isBlack = !Chess.isBlack;
+
+        for (let i = 0; i < clonedBoard.length; i++) {
+            for (let j = 0; j < clonedBoard[i].length; j++) {
+                gameBoard[i][j] = clonedBoard[i][j];
+            }
+        }
+        GetAllPiecePositions();
+        AddNewThreats('w');
+        AddNewThreats('b');
+        if (currEval > bestEval) {
+            bestEval = currEval;
+            currBestMove = JSON.parse(JSON.stringify(move));
         }
     }
-    console.log(pieces);
-    if (gameBoard[bestMove.toRow][bestMove.toCol] !== '') {
-        RemoveCapturedPieceFromPiecesArray(bestMove.toRow, bestMove.toCol);
+    let prevRow = currBestMove.fromRow;
+    let prevCol = currBestMove.fromCol;
+
+    if (gameBoard[currBestMove.toRow][currBestMove.toCol] !== "") {
+        RemoveCapturedPieceFromPiecesArray(currBestMove.toRow, currBestMove.toCol);
     }
-    await MoveThePiece(bestMove.piece, bestMove.fromRow, bestMove.fromCol, bestMove.toRow, bestMove.toCol);
-    InitializeThreatBoard();
-    AddNewThreats(Chess.isBlack ? 'b' : 'w');
-    console.log(pieces);
-    let opponentPieces = Chess.isBlack ? whitePieces : blackPieces;
+    await MoveThePiece(currBestMove.piece, prevRow, prevCol, currBestMove.toRow, currBestMove.toCol);
     Chess.isBlack = !Chess.isBlack;
-    console.log(opponentPieces, 'is the opponent pieces');
 }

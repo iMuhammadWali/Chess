@@ -1,8 +1,7 @@
-import { Chess, gameBoard, boardDimension, whitePieces, blackPieces, lastMoves, threatBoard }
+import { Chess, gameBoard, whitePieces, blackPieces, lastMoves }
     from "./globals.js";
 import { AddNewThreats, ResetCurrentPlayerThreats } from "./threatsManager.js";
-import { RemovePreviousMovingOptions, UpdateMoveString, RemovePreviousMoveColors } from "./movesManager.js";
-import { PlayedMoves } from "./chessManager.js";
+import { RemovePreviousMovingOptions } from "./movesManager.js";
 import { DrawPawnPromotionBox } from "./boardManager.js";
 const moveSound = new Audio ('/assets/moveSound.mp3');
 const captureSound = new Audio ('/assets/captureSound.mp3');
@@ -194,8 +193,8 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
     else if (castlingDirection){
         castleSound.play();
     }
-    else  moveSound.play();
-    //export function UndoTheMove(movedPiece, capturedPiece, prevRow, prevCol, currRow, currCol, isCastling)
-    //Reset the previous row and column to out of bounds
+    else {
+        moveSound.play();
+    }
     prevRow = prevCol = 10;
 }

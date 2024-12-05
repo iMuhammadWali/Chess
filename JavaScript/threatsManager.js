@@ -239,7 +239,8 @@ export function AddNewThreats(self) {
         let row = pieces[i].row;
         let col = pieces[i].col;
 
-        let piece = gameBoard[row][col];
+        //let piece = gameBoard[row][col];
+        let piece = pieces[i].type;
         // console.log(piece, 'is the piece to add the threats and its rows and cols are', row, col);
         threatFunctions[piece[1]](row, col, self, opponent)
     }
