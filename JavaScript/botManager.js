@@ -24,7 +24,7 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
     let bestEval = null;
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
-
+        const prevChessObject = JSON.parse(JSON.stringify(Chess));
         if (gameBoard[move.toRow][move.toCol] !== "") {
             // This is the only problem left. Fixed. Prolly the problems I faced earlier were also the same.
             if (gameBoard[move.toRow][move.toCol] === "bk"){
@@ -54,6 +54,7 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         }
         // I should prolly also clone the chess Object for the kings in check.
         // Or do I need to reset the current player threats ? 
+        Object.assign(Chess, prevChessObject);
         GetAllPiecePositions();
         AddNewThreats('w');
         AddNewThreats('b');
