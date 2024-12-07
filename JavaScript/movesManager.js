@@ -70,10 +70,6 @@ const DisplayPawnMovingOptions = (currRow, currCol, isCountingMoves = false, isM
                 else return 1;
             }
         }
-        if (currRow + 1 > 7) {
-            console.log(currRow + 1, 'is causing the fuss.');
-            return;
-        }
         if (gameBoard[currRow + 1][currCol] === "" &&
             (isKingInCheck ? CanPreventCheck(currRow + 1, currCol) : true) &&
             (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow + 1, currCol) : true)) {
@@ -338,7 +334,6 @@ const DisplayKingMovingOptions = (currRow, currCol, isCountingMoves = false, isM
         let count = 0;
         for (let i = 1; i <= 2; i++) {
             let newCol = currCol + (i * direction);
-            // console.log(newCol, ": is the new col to check.\nIs it safe? ", IsSquareSafeForKing(currRow, newCol, self), "Is it empty? ", (gameBoard[currRow][newCol] === ''));
             if (newCol < 0 || newCol >= boardDimension) {
                 return false; // Out of board boundaries
             }
@@ -347,7 +342,6 @@ const DisplayKingMovingOptions = (currRow, currCol, isCountingMoves = false, isM
                 count++;
             }
         }
-        // console.log(count,': is the count');
         return (count === 2);
     }
 
@@ -402,11 +396,9 @@ export function RemovePreviousMoveColors() {
     if (lastMove.currRow === 10) return;
 
     let i = lastMove.currRow; let j = lastMove.currCol;
-    console.log('before', i, j);
     let block = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
     block.style.backgroundColor = ((i + j) % 2 === 1) ? '#779656' : '#EFEED4';
     i = lastMove.prevRow; j = lastMove.prevCol;
-    console.log('after', i, j);
     block = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
     block.style.backgroundColor = ((i + j) % 2 === 1) ? '#779656' : '#EFEED4';
 }
@@ -423,8 +415,6 @@ export function SelectAndDisplayMoves(piece, currRow, currCol) {
         if (checkGivingPieces.length > 1) { //If there any pieces threatening the king, only let the king move.
             if (piece[1] === 'k')
                 moveDisplayingFunctions[piece[1]](currRow, currCol);
-
-            console.log('check giving pieces are: ', checkGivingPieces);
         }
         else // Any piece can move.
             moveDisplayingFunctions[piece[1]](currRow, currCol);
