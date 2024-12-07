@@ -443,7 +443,8 @@ export function GenerateMovesFromCurrentPosition() {
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
     for (let piece of pieces) {
         moves = moveDisplayingFunctions[piece.type[1]](piece.row, piece.col, false, true);
-        allMoves = allMoves.concat(moves);
+        if (moves)
+            allMoves = allMoves.concat(moves);
     }
     return allMoves;
 }
