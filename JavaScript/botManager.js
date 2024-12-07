@@ -10,13 +10,16 @@ import { RemoveCapturedPieceFromPiecesArray } from './piecesManager.js';
 import { GetAllPiecePositions, UpdateBoard } from './boardManager.js';
 import { IsGameOver } from "./chessManager.js";
 
-async function sleep() {
-    return new Promise(resolve => setTimeout(resolve, 10));
-}
-
 // I do believe that all the problems are fixed. However, If they are not, I will not run away from them and will fix them for sure.
-
 async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infinity) {
+    if (IsGameOver()){
+        if (Chess.isBlack){
+            return Infinity;
+        }
+        else{
+            return -Infinity;
+        }
+    }
     if (depth == 0) {
         return EvaluateBoard();
     }
@@ -31,13 +34,12 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         console.log(move);
         
         if (gameBoard[move.toRow][move.toCol] !== "") {
-            // if (gameBoard[move.toRow][move.toCol] === "bk"){
-            //     return -Infinity;
-            // }
-            // if (gameBoard[move.toRow][move.toCol] === "wk"){
-            //     return Infinity;
-            // }
-            //gameBoard[move.toRow][move.toCol]+= "capture:" + gameBoard[move.toRow][move.toCol];
+            if (gameBoard[move.toRow][move.toCol] === "bk"){
+                return -Infinity;
+            }
+            if (gameBoard[move.toRow][move.toCol] === "wk"){
+                return Infinity;
+            }
             RemoveCapturedPieceFromPiecesArray(move.toRow, move.toCol);
         }
         
@@ -46,15 +48,14 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         else bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, Infinity, beta);
 
         Chess.isBlack = !Chess.isBlack;
-        //await sleep();
+
+        // Undo the changes.
         for (let i = 0; i < clonedBoard.length; i++) {
             for (let j = 0; j < clonedBoard[i].length; j++) {
                 gameBoard[i][j] = clonedBoard[i][j];
             }
         }
-        // Or do I need to reset the current player threats ? 
         Object.assign(Chess, prevChessObject);
-
         GetAllPiecePositions();
         AddNewThreats('w');
         AddNewThreats('b');
@@ -116,10 +117,8 @@ export default async function PlayTheBotMove() {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
         const prevChessObject = JSON.parse(JSON.stringify(Chess));
         await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol, true);
-        console.log(move);
 
         Chess.isBlack = !Chess.isBlack;
-        UpdateBoard();
         currEval = await MiniMax(3, false, alpha, beta);
 
         Chess.isBlack = !Chess.isBlack;
@@ -146,6 +145,4 @@ export default async function PlayTheBotMove() {
     }
     await MoveThePiece(currBestMove.piece, prevRow, prevCol, currBestMove.toRow, currBestMove.toCol, false, true);
     Chess.isBlack = !Chess.isBlack;
-    console.log('white Pieces', whitePieces);
-    console.log('black Pieces', blackPieces);
 }
