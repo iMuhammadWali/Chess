@@ -21,19 +21,18 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         return EvaluateBoard();
     }
     let allMoves = GenerateMovesFromCurrentPosition();
+    console.log(allMoves);
     let bestEval = null;
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
         const prevChessObject = JSON.parse(JSON.stringify(Chess));
         if (gameBoard[move.toRow][move.toCol] !== "") {
-            // This is the only problem left. Fixed. Prolly the problems I faced earlier were also the same.
             if (gameBoard[move.toRow][move.toCol] === "bk"){
                 return -Infinity;
             }
             if (gameBoard[move.toRow][move.toCol] === "wk"){
                 return Infinity;
             }
-            //RemoveCapturedPieceFromPiecesArray(move.toRow, move.toCol);
             gameBoard[move.toRow][move.toCol]+= "capture:" + gameBoard[move.toRow][move.toCol];
         }
 
@@ -41,7 +40,6 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         console.log(move);
 
         Chess.isBlack = !Chess.isBlack;
-        //UpdateBoard(); 
         if (isMaximizingPlayer) bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, alpha, -Infinity);
         else bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, Infinity, beta);
 
@@ -114,13 +112,12 @@ export default async function PlayTheBotMove() {
     let bestEval = -Infinity;
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
-
-        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
+        const prevChessObject = JSON.parse(JSON.stringify(Chess));
+        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol, true);
         console.log(move);
 
         Chess.isBlack = !Chess.isBlack;
         UpdateBoard();
-        //await sleep();
         currEval = await MiniMax(3, false, alpha, beta);
 
         Chess.isBlack = !Chess.isBlack;
@@ -130,6 +127,7 @@ export default async function PlayTheBotMove() {
                 gameBoard[i][j] = clonedBoard[i][j];
             }
         }
+        Object.assign(Chess, prevChessObject);
         GetAllPiecePositions();
         AddNewThreats('w');
         AddNewThreats('b');
@@ -144,6 +142,6 @@ export default async function PlayTheBotMove() {
     if (gameBoard[currBestMove.toRow][currBestMove.toCol] !== "") {
         RemoveCapturedPieceFromPiecesArray(currBestMove.toRow, currBestMove.toCol);
     }
-    await MoveThePiece(currBestMove.piece, prevRow, prevCol, currBestMove.toRow, currBestMove.toCol);
+    await MoveThePiece(currBestMove.piece, prevRow, prevCol, currBestMove.toRow, currBestMove.toCol, false, true);
     Chess.isBlack = !Chess.isBlack;
 }
