@@ -24,7 +24,7 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         return EvaluateBoard();
     }
     let allMoves = GenerateMovesFromCurrentPosition();
-    console.log(allMoves);
+    //console.log(allMoves);
     let bestEval = null;
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
@@ -82,16 +82,8 @@ function EvaluateBoard() {
     
     for (let i = 0; i < boardDimension; ++i) {
         for (let j = 0; j < boardDimension; ++j) {
-            if (gameBoard[i][j].startsWith('w')) {
-                let pieceType = gameBoard[i][j][1];
-                if (pieceType === 'p') whiteScore+= 1;
-                else if (pieceType === 'r') whiteScore+= 5;
-                else if (pieceType === 'n') whiteScore+= 3;
-                else if (pieceType === 'b') whiteScore+= 3;
-                else if (pieceType === 'q') whiteScore+= 9;
-                else if (pieceType === 'k') whiteScore+= 100;
-            }
-            if (gameBoard[i][j].startsWith('b')) {
+            let score = 0;
+            if (gameBoard[i][j] !== "") {
                 let pieceType = gameBoard[i][j][1];
                 if (pieceType === 'p') blackScore+= 1;
                 else if (pieceType === 'r') blackScore+= 5;
@@ -100,6 +92,10 @@ function EvaluateBoard() {
                 else if (pieceType === 'q') blackScore+= 9;
                 else if (pieceType === 'k') blackScore+= 100;
             }
+            if (gameBoard[i][j].startsWith('b')) {
+                blackScore-= score;
+            }
+            else whiteScore+=score;
         }
     }
     blackScore*= -1;

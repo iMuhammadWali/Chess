@@ -46,6 +46,7 @@ body {
 }
 
 .sound-on {
+    display: none;    
     height: 50px;
     width: 50px;
     background: url('/assets/musicOnButton.png') no-repeat center center;
@@ -54,7 +55,6 @@ body {
 }
 
 .sound-off {
-    display: none;
     height: 50px;
     width: 50px;
     background: url('/assets/musicOffButton.png') no-repeat center center;
@@ -123,12 +123,14 @@ body {
 .number {
     /* height: 3px;
     width: 3px; */
+    pointer-events: none;
     position: absolute;
 }
 
 .letter {
     /* height: 4px;
     width: 4px; */
+    pointer-events: none;
     position: absolute;
 }
 

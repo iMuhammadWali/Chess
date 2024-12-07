@@ -31,7 +31,6 @@ const botButton = document.getElementById('bot');
 const backButton = document.querySelector('.back-button');
 const soundOnButton = document.querySelector('.sound-on');
 const soundOffButton = document.querySelector('.sound-off');
-console.log(backButton);
 const game = document.querySelector('.game');
 const gameMenu = document.querySelector('.game-menu');
 const turnText = document.querySelector('.turn');
@@ -41,7 +40,6 @@ export const PlayedMoves = {
     fullMoves: ''
 }
 export function IsGameOver() {
-
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
     let RemainingMoveCount = 0;
     let isKingInCheck = Chess.isBlack ? Chess.isBlackKingInCheck : Chess.isWhiteKingInCheck;
@@ -56,7 +54,7 @@ export function IsGameOver() {
         let col = pieces[i].col;
 
         let piece = gameBoard[row][col];
-        console.log(piece, 'checking for remaining moves');
+        //console.log(piece, 'checking for remaining moves');
         if (checkGivingPieces.length > 1) {
             //Check for only King moves
             if (piece[1] === 'k')
@@ -154,6 +152,7 @@ async function HandleClickEvent(event) {
         Chess.isBlack = !Chess.isBlack;
         if (IsGameOver()) {
             alert('Game is Over');
+            //return;
         };
         if (GameStates.isBot){
             UpdateBoard();
@@ -177,13 +176,12 @@ function DisplayMenu() {
     game.style.display = 'none';
     gameMenu.style.display = 'flex';
 }
-function InitGame(currState) {
+function InitGame() {
     DrawTurnName();
     menuButtonSound.play();
     game.style.display = 'flex';
     gameMenu.style.display = 'none';
-    currState = true;
-    backgroundMusic.play();
+    //backgroundMusic.play();
     backgroundMusic.addEventListener('ended', function () {
         backgroundMusic.play();
     });
