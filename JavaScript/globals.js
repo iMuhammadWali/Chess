@@ -9,14 +9,14 @@
 //     ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"]
 // ];
 export const initialGameBoard = [
-    ["br", "", "bb", "bq", "bk", "bb", "", "br"], 
-    ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+    ["br", "", "bb", "bq", "", "bb", "", "br"], 
+    ["bp", "bp", "bp", "bk", "bp", "bp", "bp", "bp"],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
+    ["wb", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["bp", "", "", "", "", "", "", ""],
-    ["", "wn", "wb", "wq", "wk", "wb", "wn", "wr"]
+    ["", "bb", "", "wk", "", "wb", "wn", "wr"]
 ];
 export let gameBoard = initialGameBoard.map(row => [...row]);
 // export let gameBoard = [...initialGameBoard];

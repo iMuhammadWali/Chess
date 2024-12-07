@@ -26,6 +26,10 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
         const prevChessObject = JSON.parse(JSON.stringify(Chess));
+
+        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol, true);
+        console.log(move);
+        
         if (gameBoard[move.toRow][move.toCol] !== "") {
             if (gameBoard[move.toRow][move.toCol] === "bk"){
                 return -Infinity;
@@ -33,12 +37,10 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
             if (gameBoard[move.toRow][move.toCol] === "wk"){
                 return Infinity;
             }
-            gameBoard[move.toRow][move.toCol]+= "capture:" + gameBoard[move.toRow][move.toCol];
+            //gameBoard[move.toRow][move.toCol]+= "capture:" + gameBoard[move.toRow][move.toCol];
+            RemoveCapturedPieceFromPiecesArray(move.toRow, move.toCol);
         }
-
-        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol, true);
-        console.log(move);
-
+        
         Chess.isBlack = !Chess.isBlack;
         if (isMaximizingPlayer) bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, alpha, -Infinity);
         else bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, Infinity, beta);
@@ -50,9 +52,9 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
                 gameBoard[i][j] = clonedBoard[i][j];
             }
         }
-        // I should prolly also clone the chess Object for the kings in check.
         // Or do I need to reset the current player threats ? 
         Object.assign(Chess, prevChessObject);
+
         GetAllPiecePositions();
         AddNewThreats('w');
         AddNewThreats('b');
@@ -144,4 +146,6 @@ export default async function PlayTheBotMove() {
     }
     await MoveThePiece(currBestMove.piece, prevRow, prevCol, currBestMove.toRow, currBestMove.toCol, false, true);
     Chess.isBlack = !Chess.isBlack;
+    console.log('white Pieces', whitePieces);
+    console.log('black Pieces', blackPieces);
 }
