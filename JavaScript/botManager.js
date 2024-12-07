@@ -14,10 +14,12 @@ import { IsGameOver } from "./chessManager.js";
 async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infinity) {
     if (IsGameOver()){
         if (Chess.isBlack){
-            return Infinity;
-        }
-        else{
+            console.log('White wins');
             return -Infinity;
+        }
+        else {
+            console.log('White wins');
+            return Infinity;
         }
     }
     if (depth == 0) {
@@ -30,9 +32,6 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
         const prevChessObject = JSON.parse(JSON.stringify(Chess));
 
-        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol, true);
-        console.log(move);
-        
         if (gameBoard[move.toRow][move.toCol] !== "") {
             if (gameBoard[move.toRow][move.toCol] === "bk"){
                 return -Infinity;
@@ -43,10 +42,14 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
             RemoveCapturedPieceFromPiecesArray(move.toRow, move.toCol);
         }
         
+        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol, true);
+        console.log(move);
+        
+        
         Chess.isBlack = !Chess.isBlack;
         if (isMaximizingPlayer) bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, alpha, -Infinity);
         else bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, Infinity, beta);
-
+        if (bestEval == Infinity || bestEval == -Infinity) console.log('the move is', move);
         Chess.isBlack = !Chess.isBlack;
 
         // Undo the changes.
@@ -93,12 +96,11 @@ function EvaluateBoard() {
                 else if (pieceType === 'k') blackScore+= 100;
             }
             if (gameBoard[i][j].startsWith('b')) {
-                blackScore-= score;
+                blackScore+= score;
             }
             else whiteScore+=score;
         }
     }
-    blackScore*= -1;
     return blackScore - whiteScore;
 }
 export default async function PlayTheBotMove() {
@@ -128,13 +130,18 @@ export default async function PlayTheBotMove() {
         GetAllPiecePositions();
         AddNewThreats('w');
         AddNewThreats('b');
-        if (currEval > bestEval) {
+        console.log('CurrEval',currEval);
+        console.log('bestEval',bestEval);
+
+        if (currEval >= bestEval) {
+            console.log('CurrEval',currEval);
             bestEval = currEval;
             currBestMove = JSON.parse(JSON.stringify(move));
         }
     }
     let prevRow = currBestMove.fromRow;
     let prevCol = currBestMove.fromCol;
+    console.log(currBestMove);
 
     if (gameBoard[currBestMove.toRow][currBestMove.toCol] !== "") {
         RemoveCapturedPieceFromPiecesArray(currBestMove.toRow, currBestMove.toCol);

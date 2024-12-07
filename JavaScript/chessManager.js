@@ -46,7 +46,6 @@ export function IsGameOver() {
     if (!isKingInCheck){
         return;
     }
-    console.log
     let checkGivingPieces = Chess.isBlack ? whiteCheckGivingPieces : blackCheckGivingPieces;
 
     for (let i = 0; i < pieces.length; i++) {
