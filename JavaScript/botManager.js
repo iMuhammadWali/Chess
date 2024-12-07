@@ -37,7 +37,7 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
             gameBoard[move.toRow][move.toCol]+= "capture:" + gameBoard[move.toRow][move.toCol];
         }
 
-        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
+        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol, true);
         console.log(move);
 
         Chess.isBlack = !Chess.isBlack;

@@ -135,7 +135,7 @@ export function UndoTheMove(movedPiece, capturedPiece, prevRow, prevCol, currRow
     
     AddNewThreats(selfColor);
 }
-export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, currCol){    
+export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, currCol, isSimluatedMove = false) {    
 
     let selfColor = Chess.isBlack ? 'b' : 'w';
     let capturedPiece = "";
@@ -149,7 +149,7 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
         capturedPiece = capturedPiece.split('capture:')[1];
     }
     //Update the game board with the moved piece
-    if (HasPawnMovedToTheLastRow(selectedPiece, currRow)) {
+    if (HasPawnMovedToTheLastRow(selectedPiece, currRow) && !isSimluatedMove) {
         selectedPiece = await DrawPawnPromotionBox(selectedPiece, currRow, currCol);
     }
     RemovePreviousMovingOptions();
