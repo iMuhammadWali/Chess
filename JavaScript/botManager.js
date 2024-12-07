@@ -31,12 +31,12 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         console.log(move);
         
         if (gameBoard[move.toRow][move.toCol] !== "") {
-            if (gameBoard[move.toRow][move.toCol] === "bk"){
-                return -Infinity;
-            }
-            if (gameBoard[move.toRow][move.toCol] === "wk"){
-                return Infinity;
-            }
+            // if (gameBoard[move.toRow][move.toCol] === "bk"){
+            //     return -Infinity;
+            // }
+            // if (gameBoard[move.toRow][move.toCol] === "wk"){
+            //     return Infinity;
+            // }
             //gameBoard[move.toRow][move.toCol]+= "capture:" + gameBoard[move.toRow][move.toCol];
             RemoveCapturedPieceFromPiecesArray(move.toRow, move.toCol);
         }

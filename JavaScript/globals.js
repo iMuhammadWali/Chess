@@ -9,15 +9,16 @@
 //     ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"]
 // ];
 export const initialGameBoard = [
-    ["br", "", "bb", "bq", "", "", "", "br"], 
-    ["bp", "bp", "bp", "bk", "bp", "bp", "bp", "bp"],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "bb", ""],
-    ["wb", "", "", "", "", "wn", "", ""],
-    ["", "", "", "", "wk", "", "", ""],
-    ["", "bb", "", "", "", "wb", "wn", "wr"]
+    ["br",  "",     "bb",   "bq",   "",     "",     "",     "br"], 
+    ["bp", "bp",    "bp",   "bk",   "bp",   "bp",   "bp",   "bp"],
+    ["",    "",     "",     "",     "",     "",     "",     ""],
+    ["",    "",     "",     "",     "",     "",     "",     ""],
+    ["",    "",     "",     "",     "",     "",     "bb",   ""],
+    ["",  "",     "",     "",     "",     "wn",   "",     ""],
+    ["bp",    "",     "",     "",     "wk",   "",     "",     ""],
+    ["",    "wq",   "",     "",     "",     "wb",   "wn",   "wr"]
 ];
+
 export let gameBoard = initialGameBoard.map(row => [...row]);
 // export let gameBoard = [...initialGameBoard];
 export function ResetGameBoard() {
