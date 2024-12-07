@@ -70,18 +70,22 @@ const DisplayPawnMovingOptions = (currRow, currCol, isCountingMoves = false, isM
                 else return 1;
             }
         }
+        if (currRow + 1 > 7) {
+            console.log(currRow + 1, 'is causing the fuss.');
+            return;
+        }
         if (gameBoard[currRow + 1][currCol] === "" &&
             (isKingInCheck ? CanPreventCheck(currRow + 1, currCol) : true) &&
             (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow + 1, currCol) : true)) {
             if (isMakingMovesArray) {
-                if (currRow === 0) {
+                if (currRow + 1 === 7) {
                     moves.push({ piece: "bq", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol });
                     moves.push({ piece: "br", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol });
                     moves.push({ piece: "bb", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol });
                     moves.push({ piece: "bn", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol });
                 }
-                else 
-                moves.push({ piece: pawn.type, fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol });
+                else
+                    moves.push({ piece: pawn.type, fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol });
             }
             else if (!isCountingMoves) gameBoard[currRow + 1][currCol] = 'validMove';
             else return 1;
@@ -91,17 +95,23 @@ const DisplayPawnMovingOptions = (currRow, currCol, isCountingMoves = false, isM
             (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow + 1, currCol + 1) : true)) {
 
             if (isMakingMovesArray) {
-                if (currRow === 0) {
-                    moves.push({ piece: "bq", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol +1 });
-                    moves.push({ piece: "br", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol 
-                    + 1});
-                    moves.push({ piece: "bb", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol 
-                    + 1});
-                    moves.push({ piece: "bn", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol
-                    + 1});
+                if (currRow + 1 === 7) {
+                    moves.push({ piece: "bq", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol + 1 });
+                    moves.push({
+                        piece: "br", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol
+                            + 1
+                    });
+                    moves.push({
+                        piece: "bb", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol
+                            + 1
+                    });
+                    moves.push({
+                        piece: "bn", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol
+                            + 1
+                    });
                 }
-                else 
-                moves.push({ piece: pawn.type, fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol + 1 });
+                else
+                    moves.push({ piece: pawn.type, fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol + 1 });
             } else if (!isCountingMoves)
                 gameBoard[currRow + 1][currCol + 1] = `capture:${gameBoard[currRow + 1][currCol + 1]}`;
             else return 1;
@@ -110,14 +120,14 @@ const DisplayPawnMovingOptions = (currRow, currCol, isCountingMoves = false, isM
             (isKingInCheck ? CanPreventCheck(currRow + 1, currCol - 1) : true) &&
             (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow + 1, currCol - 1) : true)) {
             if (isMakingMovesArray) {
-                if (currRow === 0) {
-                    moves.push({ piece: "bq", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol -1 });
-                    moves.push({ piece: "br", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol -1});
-                    moves.push({ piece: "bb", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol -1});
-                    moves.push({ piece: "bn", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol -1 });
+                if (currRow + 1 === 7) {
+                    moves.push({ piece: "bq", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol - 1 });
+                    moves.push({ piece: "br", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol - 1 });
+                    moves.push({ piece: "bb", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol - 1 });
+                    moves.push({ piece: "bn", fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol - 1 });
                 }
-                else 
-                moves.push({ piece: pawn.type, fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol - 1 });
+                else
+                    moves.push({ piece: pawn.type, fromRow: currRow, fromCol: currCol, toRow: currRow + 1, toCol: currCol - 1 });
             }
             else if (!isCountingMoves)
                 gameBoard[currRow + 1][currCol - 1] = `capture:${gameBoard[currRow + 1][currCol - 1]}`;
@@ -139,7 +149,7 @@ const DisplayPawnMovingOptions = (currRow, currCol, isCountingMoves = false, isM
             (isKingInCheck ? CanPreventCheck(currRow - 1, currCol) : true) &&
             (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow - 1, currCol) : true)) {
             if (isMakingMovesArray) {
-                if (currRow === 0) {
+                if (currRow - 1 === 0) {
                     moves.push({ piece: "wq", fromRow: currRow, fromCol: currCol, toRow: currRow - 1, toCol: currCol });
                     moves.push({ piece: "wr", fromRow: currRow, fromCol: currCol, toRow: currRow - 1, toCol: currCol });
                     moves.push({ piece: "wb", fromRow: currRow, fromCol: currCol, toRow: currRow - 1, toCol: currCol });
@@ -156,7 +166,7 @@ const DisplayPawnMovingOptions = (currRow, currCol, isCountingMoves = false, isM
             (isKingInCheck ? CanPreventCheck(currRow - 1, currCol + 1) : true) &&
             (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow - 1, currCol + 1) : true)) {
             if (isMakingMovesArray) {
-                if (currRow === 0) {
+                if (currRow - 1 === 0) {
                     moves.push({ piece: "wq", fromRow: currRow, fromCol: currCol, toRow: currRow - 1, toCol: currCol + 1 });
                     moves.push({ piece: "wr", fromRow: currRow, fromCol: currCol, toRow: currRow - 1, toCol: currCol + 1 });
                     moves.push({ piece: "wb", fromRow: currRow, fromCol: currCol, toRow: currRow - 1, toCol: currCol + 1 });
@@ -174,7 +184,7 @@ const DisplayPawnMovingOptions = (currRow, currCol, isCountingMoves = false, isM
             (isKingInCheck ? CanPreventCheck(currRow - 1, currCol - 1) : true) &&
             (pawn.isPinned ? CanMoveInThePinnedPath(pawn, currRow - 1, currCol - 1) : true)) {
             if (isMakingMovesArray) {
-                if (currRow === 0) {
+                if (currRow - 1 === 0) {
                     moves.push({ piece: "wq", fromRow: currRow, fromCol: currCol, toRow: currRow - 1, toCol: currCol - 1 });
                     moves.push({ piece: "wr", fromRow: currRow, fromCol: currCol, toRow: currRow - 1, toCol: currCol - 1 });
                     moves.push({ piece: "wb", fromRow: currRow, fromCol: currCol, toRow: currRow - 1, toCol: currCol - 1 });

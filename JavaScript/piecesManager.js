@@ -3,9 +3,9 @@ import { Chess, gameBoard, whitePieces, blackPieces, lastMoves }
 import { AddNewThreats, ResetCurrentPlayerThreats } from "./threatsManager.js";
 import { RemovePreviousMovingOptions } from "./movesManager.js";
 import { DrawPawnPromotionBox } from "./boardManager.js";
-const moveSound = new Audio ('/assets/moveSound.mp3');
-const captureSound = new Audio ('/assets/captureSound.mp3');
-const castleSound = new Audio ('/assets/castleSound.mp3');
+const moveSound = new Audio('/assets/moveSound.mp3');
+const captureSound = new Audio('/assets/captureSound.mp3');
+const castleSound = new Audio('/assets/castleSound.mp3');
 
 export function RemoveCapturedPieceFromPiecesArray(row, col) {
 
@@ -50,19 +50,19 @@ function HasKingMoved(selectedPiece) {
             Chess.hasWhiteKingMoved = true;
     }
 }
-function CastleRook(pieces, direction){
+function CastleRook(pieces, direction) {
     let rook = Chess.isBlack ? 'br' : 'wr';
     let rookPrevRow = Chess.isBlack ? 0 : 7;
     let rookPrevCol = (direction < 0) ? 0 : 7;
     let rookNewRow = rookPrevRow;
     let rookNewCol = (direction < 0) ? 3 : 5;
-    
+
     //PopulateLastMovesArray(rookPrevRow, rookPrevCol, rookNewRow, rookNewCol, gameBoard[rookNewRow][rookNewCol]);
     gameBoard[rookPrevRow][rookPrevCol] = '';
     gameBoard[rookNewRow][rookNewCol] = rook;
     UpdateCurrentPlayerPositionInPiecesArray(pieces, rookPrevRow, rookPrevCol, rookNewRow, rookNewCol);
 }
-function UndoCastleRook(pieces, direction){
+function UndoCastleRook(pieces, direction) {
     let rook = Chess.isBlack ? 'br' : 'wr';
     let rookPrevRow = Chess.isBlack ? 0 : 7;
     let rookPrevCol = (direction < 0) ? 0 : 7;
@@ -73,14 +73,14 @@ function UndoCastleRook(pieces, direction){
     gameBoard[rookNewRow][rookNewCol] = '';
     UpdateCurrentPlayerPositionInPiecesArray(pieces, rookNewRow, rookNewCol, rookPrevRow, rookPrevCol);
 }
-function RemoveKingFromCheck(){
+function RemoveKingFromCheck() {
     if (Chess.isBlack) Chess.isBlackKingInCheck = false;
     else Chess.isWhiteKingInCheck = false;
 }
 const PopulateLastMovesArray = (prevRow, prevCol, currRow, currCol, capturedPiece, hasKingMoved) => {
-    
+
     let lastMove = {
-        prevRow: prevRow, 
+        prevRow: prevRow,
         prevCol: prevCol,
         currRow: currRow,
         currCol: currCol,
@@ -89,7 +89,7 @@ const PopulateLastMovesArray = (prevRow, prevCol, currRow, currCol, capturedPiec
         hasKingMoved: hasKingMoved,
     }
     lastMoves.push(lastMove);
-} 
+}
 function AddCapturedPieceBackToPiecesArray(capturedPiece, fromRow, fromCol) {
 
     let opponentPieces = Chess.isBlack ? whitePieces : blackPieces;
@@ -102,7 +102,7 @@ function AddCapturedPieceBackToPiecesArray(capturedPiece, fromRow, fromCol) {
 }
 
 // Works fine as Wine !!
-export function UndoTheMove(movedPiece, capturedPiece, prevRow, prevCol, currRow, currCol, HasKingMovedInTheLastMove){
+export function UndoTheMove(movedPiece, capturedPiece, prevRow, prevCol, currRow, currCol, HasKingMovedInTheLastMove) {
     // The prevRow and prevCol was the block where the piece was moved to in the previous Turn.
     // The currRow and currCol is the block where the piece was moved from in the previous Turn.
 
@@ -112,13 +112,13 @@ export function UndoTheMove(movedPiece, capturedPiece, prevRow, prevCol, currRow
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
 
     // Get the kings move status from the last move.
-    let  hasKingMoved = Chess.isBlack ? Chess.hasBlackKingMoved : Chess.hasWhiteKingMoved;
+    let hasKingMoved = Chess.isBlack ? Chess.hasBlackKingMoved : Chess.hasWhiteKingMoved;
     hasKingMoved = HasKingMovedInTheLastMove;
 
-    if (capturedPiece !== ''){
+    if (capturedPiece !== '') {
         AddCapturedPieceBackToPiecesArray(capturedPiece, prevRow, prevCol);
     }
-    if (DidKingCastle(movedPiece, currRow, currCol, prevRow, prevCol)){
+    if (DidKingCastle(movedPiece, currRow, currCol, prevRow, prevCol)) {
         console.log('Undoing the castling move');
         UndoCastleRook(pieces, currRow, currCol);
     }
@@ -132,10 +132,10 @@ export function UndoTheMove(movedPiece, capturedPiece, prevRow, prevCol, currRow
     // Remove the opponent king from Check.
     if (Chess.isBlack) Chess.isWhiteKingInCheck = false;
     else Chess.isBlackKingInCheck = false;
-    
+
     AddNewThreats(selfColor);
 }
-export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, currCol, isSimluatedMove = false) {    
+export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, currCol, isSimluatedMove = false) {
 
     let selfColor = Chess.isBlack ? 'b' : 'w';
     let capturedPiece = "";
@@ -143,21 +143,23 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
     let isCapturing = gameBoard[currRow][currCol].includes('capture');
 
     //Check if the move involves capturing an opponent's piece
-    if (isCapturing){
+    if (isCapturing) {
         RemoveCapturedPieceFromPiecesArray(currRow, currCol);
         capturedPiece = gameBoard[currRow][currCol];
         capturedPiece = capturedPiece.split('capture:')[1];
     }
     //Update the game board with the moved piece
-    if (HasPawnMovedToTheLastRow(selectedPiece, currRow) && !isSimluatedMove) {
-        selectedPiece = await DrawPawnPromotionBox(selectedPiece, currRow, currCol);
+    if (!isSimluatedMove) {
+        if (HasPawnMovedToTheLastRow(selectedPiece, currRow)) {
+            selectedPiece = await DrawPawnPromotionBox(selectedPiece, currRow, currCol);
+        }
     }
     RemovePreviousMovingOptions();
 
     HasKingMoved(selectedPiece);
     let hasKingMoved = Chess.isBlack ? Chess.hasBlackKingMoved : Chess.hasWhiteKingMoved;
     PopulateLastMovesArray(prevRow, prevCol, currRow, currCol, capturedPiece, hasKingMoved);
-    
+
     gameBoard[prevRow][prevCol] = '';
     gameBoard[currRow][currCol] = selectedPiece;
 
@@ -186,15 +188,17 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
     // PlayedMoves.fullMoves += moveString;
 
     // console.log(PlayedMoves.fullMoves);
-
-    if (isCapturing){
+    prevRow = prevCol = 10;
+    if (isSimluatedMove){
+        return;
+    }
+    if (isCapturing) {
         captureSound.play();
     }
-    else if (castlingDirection){
+    else if (castlingDirection) {
         castleSound.play();
     }
     else {
         moveSound.play();
     }
-    prevRow = prevCol = 10;
 }

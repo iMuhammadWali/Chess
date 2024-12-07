@@ -152,13 +152,12 @@ async function HandleClickEvent(event) {
 
         await MoveThePiece(Chess.selectedPiece, Chess.prevRow, Chess.prevCol, currRow, currCol);
         Chess.isBlack = !Chess.isBlack;
-        UpdateBoard();
-        //PlayNextMoves();
         if (IsGameOver()) {
             alert('Game is Over');
         };
         if (GameStates.isBot){
             UpdateBoard();
+            await sleep();
             await PlayTheBotMove();
         }
         DrawTurnName();
@@ -256,10 +255,8 @@ function ResumeGame() {
     RetriveGamePositionFromLocalStorage();
     GetAllPiecePositions();
     const AddOpponentThreatsOnTheCurrentBoard = () => {
-        Chess.isBlack = !Chess.isBlack;
-        let opponent = Chess.isBlack ? 'b' : 'w';
+        let opponent = Chess.isBlack ? 'w' : 'b';
         AddNewThreats(opponent);
-        Chess.isBlack = !Chess.isBlack;
     }
     AddOpponentThreatsOnTheCurrentBoard();
     StartLocalGame();
@@ -272,8 +269,6 @@ function StartGame() {
         backgroundMusic.pause();
         DisplayMenu();
         ResetChess();
-
-        //console.log('Page is about to be unloaded...');
 
         // the currentRow of the last move is the place where the piece was moved 
         // let lastMove = lastMoves.pop();
