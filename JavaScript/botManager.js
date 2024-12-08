@@ -75,7 +75,7 @@ function EvaluateBoard() {
     };
 
     const positionalValues = {
-        p: [ 
+        p: [
             [0, 0, 0, 0, 0, 0, 0, 0],
             [5, 5, 5, 5, 5, 5, 5, 5],
             [1, 1, 2, 3, 3, 2, 1, 1],
@@ -85,7 +85,7 @@ function EvaluateBoard() {
             [0.5, 1, 1, -2, -2, 1, 1, 0.5],
             [0, 0, 0, 0, 0, 0, 0, 0]
         ],
-        n: [ 
+        n: [
             [-5, -4, -3, -3, -3, -3, -4, -5],
             [-4, -2, 0, 0, 0, 0, -2, -4],
             [-3, 0, 1, 1.5, 1.5, 1, 0, -3],
@@ -95,7 +95,7 @@ function EvaluateBoard() {
             [-4, -2, 0, 0.5, 0.5, 0, -2, -4],
             [-5, -4, -3, -3, -3, -3, -4, -5]
         ],
-        b: [ 
+        b: [
             [-2, -1, -1, -1, -1, -1, -1, -2],
             [-1, 0, 0, 0, 0, 0, 0, -1],
             [-1, 0, 0.5, 1, 1, 0.5, 0, -1],
@@ -105,7 +105,7 @@ function EvaluateBoard() {
             [-1, 0.5, 0, 0, 0, 0, 0.5, -1],
             [-2, -1, -1, -1, -1, -1, -1, -2]
         ],
-        r: [ 
+        r: [
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0.5, 1, 1, 1, 1, 1, 1, 0.5],
             [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
@@ -118,8 +118,8 @@ function EvaluateBoard() {
         q: [
             [-2, -1, -1, -0.5, -0.5, -1, -1, -2],
             [-1, 0, 0, 0, 0, 0, 0, -1],
+            [0.25, 0.5, 1, 1, 1, 1, 0.5, 0.25],
             [-1, 0, 0.5, 0.5, 0.5, 0.5, 0, -1],
-            [-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
             [0, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
             [-1, 0.5, 0.5, 0.5, 0.5, 0.5, 0, -1],
             [-1, 0, 0.5, 0, 0, 0, 0, -1],
@@ -136,6 +136,7 @@ function EvaluateBoard() {
             [2, 3, 1, 0, 0, 1, 3, 2]
         ]
     };
+
     const boardSize = boardDimension;
     let whiteScore = 0;
     let blackScore = 0;
@@ -146,31 +147,97 @@ function EvaluateBoard() {
             if (square !== "") {
                 const pieceType = square[1].toLowerCase();
                 const isBlack = square.startsWith('b');
-                const baseValue = pieceValues[pieceType] || 0;
+                
+                const pieceValue = pieceValues[pieceType] || 0;
+                
                 const positionalValue = 
                     positionalValues[pieceType]?.[isBlack ? 7 - i : i]?.[j] || 0;
-                const score = baseValue + positionalValue;
+                
+                const strategicAdjustments = calculateStrategicBonus(pieceType, i, j, isBlack);
+                const score = pieceValue + positionalValue + strategicAdjustments;
 
                 if (isBlack) blackScore += score;
                 else whiteScore += score;
             }
         }
     }
+    const mobilityScore = calculateMobilityBonus();
+    const developmentBonus = calculateDevelopmentBonus();
+
+    if (Chess.isBlack) {
+        blackScore += mobilityScore + developmentBonus;
+    } else {
+        whiteScore += mobilityScore + developmentBonus;
+    }
+
+    return blackScore - whiteScore;
+}
+function calculateStrategicBonus(pieceType, row, col, isBlack) {
+    let bonus = 0;
+    switch(pieceType) {
+        case 'n':
+            if ((col >= 2 && col <= 5) && (row >= 2 && row <= 5)) {
+                bonus += 0.5;
+            }
+            break;
+        case 'b':
+            if ((col + row) % 2 === 0) {
+                bonus += 0.3;
+            }
+            break;
+        case 'r':
+            if (isOpenFile(col)) {
+                bonus += 0.5;
+            }
+            break;
+        case 'q':
+            if (row !== (isBlack ? 7 : 0)) {
+                bonus += 0.2;
+            }
+            break;
+    }
+
+    return bonus;
+}
+
+function isOpenFile(col) {
+    return gameBoard.filter(row => 
+        row[col].includes('p')
+    ).length <= 2;
+}
+
+function calculateMobilityBonus() {
     let remainingMoveCount = 0;
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
+    
     for (let piece of pieces) {
         const row = piece.row;
         const col = piece.col;
         const pieceType = gameBoard[row][col][1];
         remainingMoveCount += moveDisplayingFunctions[pieceType](row, col, true);
     }
-    const mobilityBonus = 0.1 *(remainingMoveCount || 1);
-    if (Chess.isBlack) {
-        blackScore += mobilityBonus;
-    } else {
-        whiteScore += mobilityBonus;
-    }
-    return blackScore - whiteScore;
+    
+    return 0.1 * Math.log(remainingMoveCount + 1);
+}
+
+function calculateDevelopmentBonus() {
+    let developmentScore = 0;
+    const pieces = Chess.isBlack ? blackPieces : whitePieces;
+    
+    const developedPieces = pieces.filter(piece => 
+        (Chess.isBlack ? piece.row < 6 : piece.row > 1)
+    ).length;
+    const kingProtection = checkKingSafety();
+    developmentScore += 0.2 * developedPieces + kingProtection;
+    return developmentScore;
+}
+
+function checkKingSafety() {
+    // Could check:
+    // 1. Castling status
+    // 2. Nearby protective pieces
+    // 3. Potential attack vectors
+    return 0.5;
 }
 
 export default async function PlayTheBotMove() {
@@ -205,12 +272,11 @@ export default async function PlayTheBotMove() {
         console.log('CurrEval', currEval);
         console.log('Best Eval', bestEval);
         if (currEval > bestEval) {
-            console.log('CurrEval', currEval);
             bestEval = currEval;
             bestMove = move;
         }
     }
-    console.log('Best Eval', bestEval);
+    console.log('Best Eval which will be played', bestEval);
     if (bestMove) {
         await MoveThePiece(
             bestMove.piece,

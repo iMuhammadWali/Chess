@@ -9,7 +9,6 @@ const MarkThreat = (currRow, currCol, self) => {
     }
 }
 const PinPiece = (piece) => {
-    console.log(piece, ' is pinned');
     piece.isPinned = true;
 }
 const HandleOpponentKingInPath = (i, j, row, col, currRow, currCol, self) => {
@@ -26,7 +25,7 @@ const HandleOpponentKingInPath = (i, j, row, col, currRow, currCol, self) => {
     //Retrack the path so that if a piece can come in between it to prevent check
     for (let k = i - row, l = j - col; k !== currRow || l !== currCol; k -= row, l -= col) {
         AddCheckPathInThreatBoard(k, l)
-        console.log("black check is true at", k, l);
+        //console.log("black check is true at", k, l);
     }
 }
 const HandleNonEmptySquare = (i, j, row, col, currRow, currCol, self, opponent) => {
@@ -48,7 +47,7 @@ const HandleNonEmptySquare = (i, j, row, col, currRow, currCol, self, opponent) 
                 //Find the opponent Piece
                 let pieces = Chess.isBlack ? whitePieces : blackPieces;
                 let piece = pieces.find(piece => piece.row === i && piece.col === j);
-                console.log('pinning piece', piece, ' at  ', i, ' and col', j);
+                //console.log('pinning piece', piece, ' at  ', i, ' and col', j);
                 PinPiece(piece, i, j);
 
                 //Back track the pinning Path
