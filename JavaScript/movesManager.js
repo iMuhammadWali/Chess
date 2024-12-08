@@ -272,7 +272,10 @@ const DisplayKnightMovingOptions = (currRow, currCol, isCountingMoves = false, i
     let moves = [];
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
     let knight = pieces.find(piece => piece.row === currRow && piece.col === currCol);
-    if (knight.isPinned) return;
+    if (knight.isPinned) {
+        if (isCountingMoves) return 0;   
+        return;
+    }
 
     const opponent = Chess.isBlack ? 'w' : 'b';
 

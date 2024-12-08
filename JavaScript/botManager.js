@@ -19,11 +19,10 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
     }
     if (depth == 0) {
         const evalValue = EvaluateBoard();
-        // console.log('gameBoard', gameBoard);
         return evalValue;
     }
     let allMoves = GenerateMovesFromCurrentPosition();
-    //console.log(allMoves);
+
     let bestEval = isMaximizingPlayer ? -Infinity : Infinity;
 
     for (let move of allMoves) {
@@ -38,8 +37,8 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         Chess.isBlack = !Chess.isBlack;
 
         // Undo the changes.
-        for (let i = 0; i < clonedBoard.length; i++) {
-            for (let j = 0; j < clonedBoard[i].length; j++) {
+        for (let i = 0; i < boardDimension; i++) {
+            for (let j = 0; j < boardDimension; j++) {
                 gameBoard[i][j] = clonedBoard[i][j];
             }
         }
@@ -145,7 +144,7 @@ function EvaluateBoard() {
         for (let j = 0; j < boardSize; ++j) {
             const square = gameBoard[i][j];
             if (square !== "") {
-                const pieceType = square[1].toLowerCase();
+                const pieceType = square[1];
                 const isBlack = square.startsWith('b');
                 
                 const pieceValue = pieceValues[pieceType] || 0;
@@ -163,12 +162,12 @@ function EvaluateBoard() {
     }
     const mobilityScore = calculateMobilityBonus();
     const developmentBonus = calculateDevelopmentBonus();
-
     if (Chess.isBlack) {
         blackScore += mobilityScore + developmentBonus;
     } else {
         whiteScore += mobilityScore + developmentBonus;
     }
+    let score = blackScore - whiteScore;
 
     return blackScore - whiteScore;
 }
@@ -196,7 +195,6 @@ function calculateStrategicBonus(pieceType, row, col, isBlack) {
             }
             break;
     }
-
     return bonus;
 }
 
@@ -214,10 +212,10 @@ function calculateMobilityBonus() {
         const row = piece.row;
         const col = piece.col;
         const pieceType = gameBoard[row][col][1];
-        remainingMoveCount += moveDisplayingFunctions[pieceType](row, col, true);
+        remainingMoveCount +=  moveDisplayingFunctions[pieceType](row, col, true);
     }
-    
-    return 0.1 * Math.log(remainingMoveCount + 1);
+    let score = (Math.log(remainingMoveCount + 1)) / 10;
+    return score;
 }
 
 function calculateDevelopmentBonus() {
@@ -228,7 +226,9 @@ function calculateDevelopmentBonus() {
         (Chess.isBlack ? piece.row < 6 : piece.row > 1)
     ).length;
     const kingProtection = checkKingSafety();
-    developmentScore += 0.2 * developedPieces + kingProtection;
+    
+    let score = developmentScore + 0.2 * developedPieces + kingProtection;
+    developmentScore + 0.2 * developedPieces + kingProtection;
     return developmentScore;
 }
 
@@ -269,14 +269,11 @@ export default async function PlayTheBotMove() {
         AddNewThreats(Chess.isBlack ? 'b' : 'w');
         Chess.isBlack = !Chess.isBlack;
 
-        console.log('CurrEval', currEval);
-        console.log('Best Eval', bestEval);
         if (currEval > bestEval) {
             bestEval = currEval;
             bestMove = move;
         }
     }
-    console.log('Best Eval which will be played', bestEval);
     if (bestMove) {
         await MoveThePiece(
             bestMove.piece,
