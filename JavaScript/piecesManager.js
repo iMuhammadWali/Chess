@@ -1,6 +1,6 @@
 import { Chess, gameBoard, whitePieces, blackPieces, lastMoves, threatBoard }
     from "./globals.js";
-import { AddNewThreats, ResetCurrentPlayerThreats } from "./threatsManager.js";
+import { AddNewThreats, ResetAllThreats } from "./threatsManager.js";
 import { RemovePreviousMovingOptions } from "./movesManager.js";
 import { DrawPawnPromotionBox, GetAllPiecePositions } from "./boardManager.js";
 const moveSound = new Audio('/assets/moveSound.mp3');
@@ -119,7 +119,6 @@ export function UndoTheMove(movedPiece, capturedPiece, prevRow, prevCol, currRow
         AddCapturedPieceBackToPiecesArray(capturedPiece, prevRow, prevCol);
     }
     if (DidKingCastle(movedPiece, currRow, currCol, prevRow, prevCol)) {
-        console.log('Undoing the castling move');
         UndoCastleRook(pieces, currRow, currCol);
     }
     gameBoard[prevRow][prevCol] = capturedPiece;
@@ -135,9 +134,19 @@ export function UndoTheMove(movedPiece, capturedPiece, prevRow, prevCol, currRow
 
     AddNewThreats(selfColor);
 }
-export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, currCol, isSimluatedMove = false, isBotMove = false) {
 
-    let selfColor = Chess.isBlack ? 'b' : 'w';
+async function sleep(){
+    return new Promise (resolve => {
+        setTimeout(() => {
+            resolve();
+        }, 1000);
+    }
+    )
+} 
+export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, currCol, isSimluatedMove = false, isBotMove = false) {
+   
+    
+    // I will change the undo mechanism.
     let capturedPiece = "";
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
     let isCapturing = gameBoard[currRow][currCol].includes('capture');
@@ -171,13 +180,22 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
     if (castlingDirection) {
         CastleRook(pieces, castlingDirection);
     }
+    // Prepare the board for next move.
+    ResetAllThreats();
     GetAllPiecePositions();
-    ResetCurrentPlayerThreats();
+    //AddNewThreats('w')
+    //AddNewThreats('b');
+    AddNewThreats(Chess.isBlack ? 'b' : 'w');
+    Chess.isBlack = !Chess.isBlack;
+    AddNewThreats(Chess.isBlack ? 'b' : 'w');
+    Chess.isBlack = !Chess.isBlack;
+    //AddNewThreats(Chess.isBlack ? 'w' : 'b');
+        
     RemoveKingFromCheck();
 
     //Unselect the piece
     Chess.isPieceSelected = false;
-    AddNewThreats(selfColor);
+    //console.log('The board after moving', gameBoard);
 
     // This Part of the code is responsible for making the Move-string to display on the screen.
     // PlayedMoves.halfMoveCount++;

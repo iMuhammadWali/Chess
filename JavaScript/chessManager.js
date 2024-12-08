@@ -43,9 +43,6 @@ export function IsGameOver() {
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
     let RemainingMoveCount = 0;
     let isKingInCheck = Chess.isBlack ? Chess.isBlackKingInCheck : Chess.isWhiteKingInCheck;
-    if (!isKingInCheck){
-        return;
-    }
     let checkGivingPieces = Chess.isBlack ? whiteCheckGivingPieces : blackCheckGivingPieces;
 
     for (let i = 0; i < pieces.length; i++) {
@@ -65,7 +62,6 @@ export function IsGameOver() {
         }
         if (RemainingMoveCount > 0) {
             //There are moves left and hence it is not checkmate
-            console.log("There are moves left");
             return false;
         }
     }
@@ -75,7 +71,6 @@ export function IsGameOver() {
     else {
         Chess.isStalemate = true;
     }
-    console.log("Game Over!");
     return true;
 }
 function IsMoveCorrect() {
@@ -266,6 +261,11 @@ function StartGame() {
         backgroundMusic.pause();
         DisplayMenu();
         ResetChess();
+        GameStates.isBot = false;
+        GameStates.isLocalGame = false;
+        GameStates.isPuzzleGame = false;
+        GameStates.isMainMenu = true;
+        GameStates.isResume = false;
 
         // the currentRow of the last move is the place where the piece was moved 
         // let lastMove = lastMoves.pop();

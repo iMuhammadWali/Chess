@@ -1,55 +1,40 @@
-import { boardDimension, Chess } from "./globals.js";
-import { GenerateMovesFromCurrentPosition } from "./movesManager.js";
+import { boardDimension, Chess, whitePieces, blackPieces } from "./globals.js";
+import { GenerateMovesFromCurrentPosition, moveDisplayingFunctions } from "./movesManager.js";
 import { MoveThePiece } from "./piecesManager.js";
 import { gameBoard } from "./globals.js";
-import { blackPieces, whitePieces } from "./globals.js";
-import { AddNewThreats, InitializeThreatBoard, ResetCurrentPlayerThreats } from "./threatsManager.js";
-import { threatBoard } from "./globals.js";
-import { RemoveCapturedPieceFromPiecesArray } from './piecesManager.js';
+import { AddNewThreats } from "./threatsManager.js";
 
-import { GetAllPiecePositions, UpdateBoard } from './boardManager.js';
+import { GetAllPiecePositions } from './boardManager.js';
 import { IsGameOver } from "./chessManager.js";
 
 // I do believe that all the problems are fixed. However, If they are not, I will not run away from them and will fix them for sure.
 async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infinity) {
-    if (IsGameOver()){
-        if (Chess.isBlack){
-            console.log('White wins');
+    if (IsGameOver()) {
+        if (Chess.isBlack) {
             return -Infinity;
         }
         else {
-            console.log('White wins');
             return Infinity;
         }
     }
     if (depth == 0) {
-        return EvaluateBoard();
+        const evalValue = EvaluateBoard();
+        // console.log('gameBoard', gameBoard);
+        return evalValue;
     }
     let allMoves = GenerateMovesFromCurrentPosition();
     //console.log(allMoves);
-    let bestEval = null;
+    let bestEval = isMaximizingPlayer ? -Infinity : Infinity;
+
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
         const prevChessObject = JSON.parse(JSON.stringify(Chess));
 
-        if (gameBoard[move.toRow][move.toCol] !== "") {
-            if (gameBoard[move.toRow][move.toCol] === "bk"){
-                return -Infinity;
-            }
-            if (gameBoard[move.toRow][move.toCol] === "wk"){
-                return Infinity;
-            }
-            RemoveCapturedPieceFromPiecesArray(move.toRow, move.toCol);
-        }
-        
-        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol, true);
-        console.log(move);
-        
-        
+        await MoveThePiece(move.piece,  move.fromRow, move.fromCol, move.toRow, move.toCol, true);
+
         Chess.isBlack = !Chess.isBlack;
-        if (isMaximizingPlayer) bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, alpha, -Infinity);
-        else bestEval = await MiniMax(depth - 1, !isMaximizingPlayer, Infinity, beta);
-        if (bestEval == Infinity || bestEval == -Infinity) console.log('the move is', move);
+        const currEval = await MiniMax(depth - 1, !isMaximizingPlayer, alpha, beta);
+
         Chess.isBlack = !Chess.isBlack;
 
         // Undo the changes.
@@ -60,15 +45,17 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
         }
         Object.assign(Chess, prevChessObject);
         GetAllPiecePositions();
-        AddNewThreats('w');
-        AddNewThreats('b');
+        AddNewThreats(Chess.isBlack ? 'b' : 'w');
+        Chess.isBlack = !Chess.isBlack;
+        AddNewThreats(Chess.isBlack ? 'b' : 'w');
+        Chess.isBlack = !Chess.isBlack;
 
         if (isMaximizingPlayer) {
-            bestEval = Math.max(bestEval, bestEval);
+            bestEval = Math.max(bestEval, currEval);
             alpha = Math.max(alpha, bestEval);
         }
         else {
-            bestEval = Math.min(bestEval, bestEval);
+            bestEval = Math.min(bestEval, currEval);
             beta = Math.min(beta, bestEval);
         }
         if (beta <= alpha) {
@@ -78,38 +65,120 @@ async function MiniMax(depth, isMaximizingPlayer, alpha = -Infinity, beta = Infi
     return bestEval;
 }
 function EvaluateBoard() {
-    // I need to take the postiion of the peices into account as well.
+    const pieceValues = {
+        p: 1,
+        n: 3,
+        b: 3.3,
+        r: 5,
+        q: 9,
+        k: 1000
+    };
 
+    const positionalValues = {
+        p: [ 
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [5, 5, 5, 5, 5, 5, 5, 5],
+            [1, 1, 2, 3, 3, 2, 1, 1],
+            [0.5, 0.5, 1, 2.5, 2.5, 1, 0.5, 0.5],
+            [0, 0, 0, 2, 2, 0, 0, 0],
+            [0.5, -0.5, -1, 0, 0, -1, -0.5, 0.5],
+            [0.5, 1, 1, -2, -2, 1, 1, 0.5],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ],
+        n: [ 
+            [-5, -4, -3, -3, -3, -3, -4, -5],
+            [-4, -2, 0, 0, 0, 0, -2, -4],
+            [-3, 0, 1, 1.5, 1.5, 1, 0, -3],
+            [-3, 0.5, 1.5, 2, 2, 1.5, 0.5, -3],
+            [-3, 0, 1.5, 2, 2, 1.5, 0, -3],
+            [-3, 0.5, 1, 1.5, 1.5, 1, 0.5, -3],
+            [-4, -2, 0, 0.5, 0.5, 0, -2, -4],
+            [-5, -4, -3, -3, -3, -3, -4, -5]
+        ],
+        b: [ 
+            [-2, -1, -1, -1, -1, -1, -1, -2],
+            [-1, 0, 0, 0, 0, 0, 0, -1],
+            [-1, 0, 0.5, 1, 1, 0.5, 0, -1],
+            [-1, 0.5, 0.5, 1, 1, 0.5, 0.5, -1],
+            [-1, 0, 1, 1, 1, 1, 0, -1],
+            [-1, 1, 1, 1, 1, 1, 1, -1],
+            [-1, 0.5, 0, 0, 0, 0, 0.5, -1],
+            [-2, -1, -1, -1, -1, -1, -1, -2]
+        ],
+        r: [ 
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0.5, 1, 1, 1, 1, 1, 1, 0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+            [0, 0, 0, 0.5, 0.5, 0, 0, 0]
+        ],
+        q: [
+            [-2, -1, -1, -0.5, -0.5, -1, -1, -2],
+            [-1, 0, 0, 0, 0, 0, 0, -1],
+            [-1, 0, 0.5, 0.5, 0.5, 0.5, 0, -1],
+            [-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
+            [0, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
+            [-1, 0.5, 0.5, 0.5, 0.5, 0.5, 0, -1],
+            [-1, 0, 0.5, 0, 0, 0, 0, -1],
+            [-2, -1, -1, -0.5, -0.5, -1, -1, -2]
+        ],
+        k: [
+            [2, 3, 1, 0, 0, 1, 3, 2],
+            [2, 2, 0, 0, 0, 0, 2, 2],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [2, 2, 0, 0, 0, 0, 2, 2],
+            [2, 3, 1, 0, 0, 1, 3, 2]
+        ]
+    };
+    const boardSize = boardDimension;
     let whiteScore = 0;
     let blackScore = 0;
-    
-    for (let i = 0; i < boardDimension; ++i) {
-        for (let j = 0; j < boardDimension; ++j) {
-            let score = 0;
-            if (gameBoard[i][j] !== "") {
-                let pieceType = gameBoard[i][j][1];
-                if (pieceType === 'p') blackScore+= 1;
-                else if (pieceType === 'r') blackScore+= 5;
-                else if (pieceType === 'n') blackScore+= 3;
-                else if (pieceType === 'b') blackScore+= 3;
-                else if (pieceType === 'q') blackScore+= 9;
-                else if (pieceType === 'k') blackScore+= 100;
+
+    for (let i = 0; i < boardSize; ++i) {
+        for (let j = 0; j < boardSize; ++j) {
+            const square = gameBoard[i][j];
+            if (square !== "") {
+                const pieceType = square[1].toLowerCase();
+                const isBlack = square.startsWith('b');
+                const baseValue = pieceValues[pieceType] || 0;
+                const positionalValue = 
+                    positionalValues[pieceType]?.[isBlack ? 7 - i : i]?.[j] || 0;
+                const score = baseValue + positionalValue;
+
+                if (isBlack) blackScore += score;
+                else whiteScore += score;
             }
-            if (gameBoard[i][j].startsWith('b')) {
-                blackScore+= score;
-            }
-            else whiteScore+=score;
         }
+    }
+    let remainingMoveCount = 0;
+    let pieces = Chess.isBlack ? blackPieces : whitePieces;
+    for (let piece of pieces) {
+        const row = piece.row;
+        const col = piece.col;
+        const pieceType = gameBoard[row][col][1];
+        remainingMoveCount += moveDisplayingFunctions[pieceType](row, col, true);
+    }
+    const mobilityBonus = 0.1 *(remainingMoveCount || 1);
+    if (Chess.isBlack) {
+        blackScore += mobilityBonus;
+    } else {
+        whiteScore += mobilityBonus;
     }
     return blackScore - whiteScore;
 }
+
 export default async function PlayTheBotMove() {
 
     let allMoves = GenerateMovesFromCurrentPosition();
     let alpha = -Infinity;
     let beta = Infinity;
-    let currBestMove = {};
-    let currEval = -100;
+    let bestMove = {};
     let bestEval = -Infinity;
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
@@ -117,7 +186,7 @@ export default async function PlayTheBotMove() {
         await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol, true);
 
         Chess.isBlack = !Chess.isBlack;
-        currEval = await MiniMax(3, false, alpha, beta);
+        const currEval = await MiniMax(3, false, alpha, beta);
 
         Chess.isBlack = !Chess.isBlack;
 
@@ -128,24 +197,30 @@ export default async function PlayTheBotMove() {
         }
         Object.assign(Chess, prevChessObject);
         GetAllPiecePositions();
-        AddNewThreats('w');
-        AddNewThreats('b');
-        console.log('CurrEval',currEval);
-        console.log('bestEval',bestEval);
+        AddNewThreats(Chess.isBlack ? 'b' : 'w');
+        Chess.isBlack = !Chess.isBlack;
+        AddNewThreats(Chess.isBlack ? 'b' : 'w');
+        Chess.isBlack = !Chess.isBlack;
 
-        if (currEval >= bestEval) {
-            console.log('CurrEval',currEval);
+        console.log('CurrEval', currEval);
+        console.log('Best Eval', bestEval);
+        if (currEval > bestEval) {
+            console.log('CurrEval', currEval);
             bestEval = currEval;
-            currBestMove = JSON.parse(JSON.stringify(move));
+            bestMove = move;
         }
     }
-    let prevRow = currBestMove.fromRow;
-    let prevCol = currBestMove.fromCol;
-    console.log(currBestMove);
-
-    if (gameBoard[currBestMove.toRow][currBestMove.toCol] !== "") {
-        RemoveCapturedPieceFromPiecesArray(currBestMove.toRow, currBestMove.toCol);
+    console.log('Best Eval', bestEval);
+    if (bestMove) {
+        await MoveThePiece(
+            bestMove.piece,
+            bestMove.fromRow,
+            bestMove.fromCol,
+            bestMove.toRow,
+            bestMove.toCol,
+            false,
+            true
+        );
+        Chess.isBlack = !Chess.isBlack;
     }
-    await MoveThePiece(currBestMove.piece, prevRow, prevCol, currBestMove.toRow, currBestMove.toCol, false, true);
-    Chess.isBlack = !Chess.isBlack;
 }

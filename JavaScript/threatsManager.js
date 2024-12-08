@@ -48,7 +48,7 @@ const HandleNonEmptySquare = (i, j, row, col, currRow, currCol, self, opponent) 
                 //Find the opponent Piece
                 let pieces = Chess.isBlack ? whitePieces : blackPieces;
                 let piece = pieces.find(piece => piece.row === i && piece.col === j);
-                console.log ('pinning piece', piece , ' at  ', i, ' and col', j);
+                console.log('pinning piece', piece, ' at  ', i, ' and col', j);
                 PinPiece(piece, i, j);
 
                 //Back track the pinning Path
@@ -204,44 +204,33 @@ export const InitializeThreatBoard = () => {
         }
     }
 }
-export const ResetCurrentPlayerThreats = () => {
+export const ResetAllThreats = () => {
     for (let i = 0; i < threatBoard.length; i++) {
         for (let j = 0; j < threatBoard[i].length; j++) {
-            if (Chess.isBlack) {
+            //if (Chess.isBlack){
                 threatBoard[i][j].black = false;
                 threatBoard[i][j].blackCheck = false;
-            }
-            else if (!Chess.isBlack) {
+            //}
+            //else {  
                 threatBoard[i][j].white = false;
                 threatBoard[i][j].whiteCheck = false;
-            }
+            //}
         }
     }
-    //Unpin everyPiece of opponent because they will be pinned again
-    let opponentPieces = Chess.isBlack ? whitePieces : blackPieces;
-    opponentPieces.forEach(piece => {
-
-        piece.isPinned = false;
-        piece.pinPath = [];
-    });
     //Remove Checks becasue they will be given again
-    if (Chess.isBlack) {
-        blackCheckGivingPieces.length = 0;
-    } else if (!Chess.isBlack) {
-        whiteCheckGivingPieces.length = 0;
-    }
+    blackCheckGivingPieces.length = 0;
+    whiteCheckGivingPieces.length = 0;
 }
+
 export function AddNewThreats(self) {
-    let opponent = Chess.isBlack ? 'w' : 'b';
-    let pieces = Chess.isBlack ? blackPieces : whitePieces;
+    let opponent = self == 'b' ? 'w' : 'b';
+    let pieces = self == 'b' ? blackPieces : whitePieces;
 
     for (let i = 0; i < pieces.length; i++) {
         let row = pieces[i].row;
         let col = pieces[i].col;
 
         let piece = gameBoard[row][col];
-        //let piece = pieces[i].type;
-        // console.log(piece, 'is the piece to add the threats and its rows and cols are', row, col);
         threatFunctions[piece[1]](row, col, self, opponent)
     }
 }
