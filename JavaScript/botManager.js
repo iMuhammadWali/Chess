@@ -247,6 +247,9 @@ export default async function PlayTheBotMove() {
     let beta = Infinity;
     let bestMove = {};
     let bestEval = -Infinity;
+    if (allMoves.length === 0) {
+        return;
+    }
     for (let move of allMoves) {
         const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
         const prevChessObject = JSON.parse(JSON.stringify(Chess));
@@ -254,7 +257,7 @@ export default async function PlayTheBotMove() {
 
         Chess.isBlack = !Chess.isBlack;
         const currEval = await MiniMax(3, false, alpha, beta);
-
+        console.log(currEval);
         Chess.isBlack = !Chess.isBlack;
 
         for (let i = 0; i < clonedBoard.length; i++) {
@@ -273,6 +276,9 @@ export default async function PlayTheBotMove() {
             bestEval = currEval;
             bestMove = move;
         }
+        // if last move of all the moves and bestMove still not found, then set the bestMove to the last move.
+        if (move === allMoves[allMoves.length - 1] && Object.keys(bestMove).length === 0)
+            bestMove = move;
     }
     if (bestMove) {
         await MoveThePiece(
