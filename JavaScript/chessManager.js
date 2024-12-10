@@ -13,13 +13,13 @@ import { MoveThePiece, UndoTheMove } from "./piecesManager.js"
 import { AddNewThreats, InitializeThreatBoard } from "./threatsManager.js"
 import  PlayTheBotMove from "./botManager.js";
 
-const GameStates = {
-    isMainMenu: true,
-    isLocalGame: false,
-    isPuzzleGame: false,
-    isResume: false,
-    isBot:false,
-}
+// 1 - Menu
+// 2 - Local Game
+// 3 - Resume Game
+// 4 - Puzzle
+// 5 - Bot
+
+let GameStates = 1;
 
 const menuButtonSound = new Audio("/assets/highlight.ogg");
 const backgroundMusic = new Audio("/assets/backgroundMusic.ogg");
@@ -146,14 +146,17 @@ async function HandleClickEvent(event) {
         Chess.isBlack = !Chess.isBlack;
         if (IsGameOver()) {
             alert('Game is Over');
-            //return;
+            // return;
         };
-        if (GameStates.isBot){
+        if (GameStates === 5){
             UpdateBoard();
             await sleep();
             await PlayTheBotMove();
+            DrawTurnName();
         }
-        DrawTurnName();
+        else if (GameStates === 4) {
+            // This is the puzzle mode
+        }
     }
     UpdateBoard();
 }
@@ -175,7 +178,6 @@ function InitGame() {
     menuButtonSound.play();
     game.style.display = 'flex';
     gameMenu.style.display = 'none';
-    //backgroundMusic.play();
     backgroundMusic.addEventListener('ended', function () {
         backgroundMusic.play();
     });
@@ -213,47 +215,52 @@ function MakeFen() {
     return fen;
 }
 function StartLocalGame() {
-
-    InitGame(GameStates.isLocalGame);
-    if (!GameStates.isResume) {
+    InitGame();
+    if (GameStates!==3) {
         ResetChess();
         ResetGameBoard();
         InitializeThreatBoard();
     }
-    else
-        GameStates.isResume = false;
 
     setTimeout(() => {
         DrawGameBoard();
     }, 50);
 
-
     GetAllPiecePositions();
 }
 async function StartPuzzle() {
-    InitGame(GameStates.isPuzzleGame);
+    InitGame();
+    GameStates = 4;
 
     InitializeThreatBoard();
     await GetPuzzle();
+    AddOpponentThreatsOnTheCurrentBoard();
     DrawGameBoard();
     UpdateBoard();
     DrawTurnName();
+    console.log(gameBoard);
+}
+const AddOpponentThreatsOnTheCurrentBoard = () => {
+    Chess.isBlack = !Chess.isBlack;
+    let opponent = Chess.isBlack ? 'b' : 'w';
+    AddNewThreats(opponent);
+    Chess.isBlack = !Chess.isBlack;
+    AddNewThreats(Chess.isBlack ? 'b' : 'w');
 }
 function ResumeGame() {
-    GameStates.isResume = true;
+    GameStates = 3;
     RemovePreviousMovingOptions();
     EmptyGameBoard();
     InitializeThreatBoard();
+    
     RetriveGamePositionFromLocalStorage();
+
     GetAllPiecePositions();
-    const AddOpponentThreatsOnTheCurrentBoard = () => {
-        let opponent = Chess.isBlack ? 'w' : 'b';
-        AddNewThreats(opponent);
-    }
     AddOpponentThreatsOnTheCurrentBoard();
     StartLocalGame();
 }
 function StartGame() {
+    GameStates = 1;
     DisplayMenu();
     backButton.addEventListener('click', () => {
         SaveGameInLocalStorage();
@@ -261,21 +268,6 @@ function StartGame() {
         backgroundMusic.pause();
         DisplayMenu();
         ResetChess();
-        GameStates.isBot = false;
-        GameStates.isLocalGame = false;
-        GameStates.isPuzzleGame = false;
-        GameStates.isMainMenu = true;
-        GameStates.isResume = false;
-
-        // the currentRow of the last move is the place where the piece was moved 
-        // let lastMove = lastMoves.pop();
-        // console.log('last Move', lastMove);
-        // if (!lastMove) {
-        //     return;
-        // }
-        // UndoTheMove(lastMove.movedPiece, lastMove.capturedPiece, lastMove.currRow, lastMove.currCol, lastMove.prevRow, lastMove.prevCol);
-        // UpdateBoard();
-        // DrawTurnName();
     });
     soundOnButton.addEventListener('click', () => {
         soundOnButton.style.display = 'none';
@@ -287,22 +279,27 @@ function StartGame() {
         soundOnButton.style.display = 'block';
         backgroundMusic.play();
     });
-    localPlayButton.addEventListener('click', StartLocalGame);
+    localPlayButton.addEventListener('click', () => {
+        GameStates = 2;
+        StartLocalGame();
+    });
     puzzleButton.addEventListener('click', StartPuzzle);
     resumeButton.addEventListener('click', ResumeGame);
     botButton.addEventListener('click', () => {
-        GameStates.isBot = true;
+        GameStates = 5;
         StartLocalGame();
     });
 }
 function SaveGameInLocalStorage() {
+    console.log('Saving Game');
+    console.log(gameBoard);
     RemovePreviousMovingOptions();
     let FEN = MakeFen();
     console.log(FEN);
     localStorage.setItem('FEN', JSON.stringify(FEN));
 }
 window.addEventListener('beforeunload', () => {
-    SaveGameInLocalStorage();
-}
+        SaveGameInLocalStorage();
+    }
 );
 document.addEventListener("DOMContentLoaded", StartGame());

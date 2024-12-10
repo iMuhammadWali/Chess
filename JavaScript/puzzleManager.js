@@ -63,18 +63,10 @@ export async function GetPuzzle() {
     ParseFEN(data.fen);
     GetAllPiecePositions();
 
-    const AddOpponentThreatsOnTheCurrentBoard = () => {
-        Chess.isBlack = !Chess.isBlack;
-        let opponent = Chess.isBlack ? 'b' : 'w';
-        AddNewThreats(opponent);
-        Chess.isBlack = !Chess.isBlack;
-    }
-    // console.log(data.pgn);
     let pgnString = data.pgn;
     const indexOfMovesStart = pgnString.indexOf('\r\n\r\n');
     correctPuzzleMoves = pgnString.substring(indexOfMovesStart).trim();
     console.log(correctPuzzleMoves);
-    AddOpponentThreatsOnTheCurrentBoard();
     return true;
 }
 

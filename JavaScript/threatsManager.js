@@ -73,7 +73,7 @@ function AddCheckPathInThreatBoard(currRow, currCol) {
         threatBoard[currRow][currCol].whiteCheck = true;
 }
 const AddPawnThreats = (currRow, currCol, self, opponent) => {
-
+    console.log('Adding Pawn Threats');
     let isKingInCheck = false;
     const direction = Chess.isBlack ? + 1 : -1;
 
@@ -82,10 +82,10 @@ const AddPawnThreats = (currRow, currCol, self, opponent) => {
         if (currCol + 1 < boardDimension) {
 
             if (gameBoard[currRow + direction][currCol + 1] === '' ||
-                gameBoard[currRow + direction][currCol + 1] === self)
+                gameBoard[currRow + direction][currCol + 1][0] === self)
 
                 MarkThreat(currRow + direction, currCol + 1, self);
-
+                
             else if (gameBoard[currRow + direction][currCol + 1][1] === 'k' &&
                 gameBoard[currRow + direction][currCol + 1][0] === opponent) {
                 PutKingInCheck(self, currRow, currCol);
@@ -95,7 +95,7 @@ const AddPawnThreats = (currRow, currCol, self, opponent) => {
         if (currCol - 1 >= 0) {
 
             if (gameBoard[currRow + direction][currCol - 1] === '' ||
-                gameBoard[currRow + direction][currCol - 1] === self)
+                gameBoard[currRow + direction][currCol - 1][0] === self)
 
                 MarkThreat(currRow + direction, currCol - 1, self);
 
