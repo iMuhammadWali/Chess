@@ -73,7 +73,6 @@ function AddCheckPathInThreatBoard(currRow, currCol) {
         threatBoard[currRow][currCol].whiteCheck = true;
 }
 const AddPawnThreats = (currRow, currCol, self, opponent) => {
-    console.log('Adding Pawn Threats');
     let isKingInCheck = false;
     const direction = Chess.isBlack ? + 1 : -1;
 

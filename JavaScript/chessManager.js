@@ -291,7 +291,6 @@ function StartGame() {
     });
 }
 function SaveGameInLocalStorage() {
-    console.log('Saving Game');
     console.log(gameBoard);
     RemovePreviousMovingOptions();
     let FEN = MakeFen();
