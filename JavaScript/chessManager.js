@@ -155,19 +155,16 @@ async function HandleClickEvent(event) {
             // DrawTurnName();
             
             if (IsMoveCorrect()) {
-                alert('Correct Move');
                 await sleep(1000);
 
                 await PlayPuzzleMove();
             }
             else {
-                alert('Wrong Move');
-                  await sleep(1000);
-                InitializeThreatBoard();
-                AddOpponentThreatsOnTheCurrentBoard();
-                DrawGameBoard();
-                UpdateBoard();
-                DrawTurnName();
+                alert('Wrong Move. Resetting Puzzle.');
+                await sleep(1000);
+                //DisplayMenu();
+                EmptyGameBoard();
+                StartPuzzle();
             }
         }
     }
