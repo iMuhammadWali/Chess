@@ -2,7 +2,7 @@ import {
     Chess, gameBoard, boardDimension, threatBoard, whitePieces, blackPieces,
     bishopMoves, rookMoves, knightMoves, kingMoves, blackCheckGivingPieces, whiteCheckGivingPieces,
 } from "./globals.js";
-import { PlayedMoves } from "./chessManager.js";
+import { PlayedMoves } from "./piecesManager.js";
 
 
 //----------------------------[Helper Functions for Displaying a move]---------------------------------------//
@@ -427,16 +427,20 @@ export function SelectAndDisplayMoves(piece, currRow, currCol) {
     Chess.prevCol = currCol;
 }
 // This function was created to show the moves played in the game on the screen like chess.com.
-export function UpdateMoveString(isCapturing, selectedPiece, currRow, currCol, boardDimension) {
+export function UpdateMoveString(isCapturing, selectedPiece, prevCol, currRow, currCol, boardDimension) {
     let captureSymbol = isCapturing ? 'x' : '';
     let checkSymbol = (Chess.isBlackKingInCheck || Chess.isWhiteKingInCheck) ? '+' : '';
-    let move = '';
+    let move = ((selectedPiece[1] == 'p') ? (prevCol == currCol) ? '' : String.fromCharCode('a'.charCodeAt(0) + prevCol) : selectedPiece[1].toUpperCase());
+    
+    move += captureSymbol + String.fromCharCode('a'.charCodeAt(0) + currCol) + (boardDimension - currRow) + checkSymbol;
+    console.log(PlayedMoves.halfMoveCount);
 
-    if (PlayedMoves.halfMoveCount % 2 === 1) {
-        move = PlayedMoves.fullMoveCount + '.' + ' ' + selectedPiece[1].toUpperCase() + captureSymbol + String.fromCharCode('a'.charCodeAt(0) + currCol) + (boardDimension - currRow) + checkSymbol;
-    } else {
-        move = selectedPiece[1].toUpperCase() + captureSymbol + String.fromCharCode('a'.charCodeAt(0) + currCol) + (boardDimension - currRow) + checkSymbol;
-    }
+    if (PlayedMoves.halfMoveCount === 1) {
+        PlayedMoves.fullMoveCount++;
+        PlayedMoves.halfMoveCount = 0;
+        move = PlayedMoves.fullMoveCount + '. ' + move;
+    } 
+    else PlayedMoves.halfMoveCount++;
     return move + " ";
 }
 export function GenerateMovesFromCurrentPosition() {

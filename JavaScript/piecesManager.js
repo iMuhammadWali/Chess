@@ -1,11 +1,17 @@
-import { Chess, gameBoard, whitePieces, blackPieces, lastMoves, threatBoard }
+import { Chess, gameBoard, whitePieces, blackPieces, lastMoves, threatBoard, boardDimension }
     from "./globals.js";
 import { AddNewThreats, ResetAllThreats } from "./threatsManager.js";
-import { RemovePreviousMovingOptions } from "./movesManager.js";
+import { RemovePreviousMovingOptions, UpdateMoveString } from "./movesManager.js";
 import { DrawPawnPromotionBox, GetAllPiecePositions } from "./boardManager.js";
 const moveSound = new Audio('/assets/moveSound.mp3');
 const captureSound = new Audio('/assets/captureSound.mp3');
 const castleSound = new Audio('/assets/castleSound.mp3');
+
+export const PlayedMoves = {
+    fullMoves: "",
+    fullMoveCount: 0,
+    halfMoveCount: 0,
+}
 
 export function RemoveCapturedPieceFromPiecesArray(row, col) {
 
@@ -145,15 +151,17 @@ async function sleep(){
 } 
 export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, currCol, isSimluatedMove = false, isBotMove = false) {
    
-    
     // I will change the undo mechanism.
     let capturedPiece = "";
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
-    let isCapturing = gameBoard[currRow][currCol].includes('capture');
+    let isCapturing = false;
+    if (gameBoard[currRow][currCol][0] === (Chess.isBlack ? 'w' : 'b') || gameBoard[currRow][currCol].includes('capture'))  {
+        console.log('The piece at the destination is: ', gameBoard[currRow][currCol]);
+        isCapturing = true;
+    }
 
     //Check if the move involves capturing an opponent's piece
     if (isCapturing) {
-        //RemoveCapturedPieceFromPiecesArray(currRow, currCol);
         capturedPiece = gameBoard[currRow][currCol];
         capturedPiece = capturedPiece.split('capture:')[1];
     }
@@ -197,20 +205,17 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
     Chess.isPieceSelected = false;
     //console.log('The board after moving', gameBoard);
 
-    // This Part of the code is responsible for making the Move-string to display on the screen.
-    // PlayedMoves.halfMoveCount++;
-    // if (PlayedMoves.halfMoveCount % 2 === 0) {
-    //     PlayedMoves.fullMoveCount++;
-    // }
-    // // Create the move string
-    // let moveString = UpdateMoveString(isCapturing, selectedPiece, currRow, currCol, boardDimension);
-    // PlayedMoves.fullMoves += moveString;
-
-    // console.log(PlayedMoves.fullMoves);
-    prevRow = prevCol = 10;
     if (isSimluatedMove){
         return;
     }
+    //This Part of the code is responsible for making the Move-string to display on the screen.
+    // Create the move string
+    let moveString = UpdateMoveString(isCapturing, selectedPiece, prevCol, currRow, currCol, boardDimension);
+    PlayedMoves.fullMoves += moveString;
+
+    console.log(PlayedMoves.fullMoves);
+    prevRow = prevCol = 10;
+
     if (isCapturing) {
         captureSound.play();
     }

@@ -9,9 +9,9 @@ import {
 import { GenerateMovesFromCurrentPosition, RemovePreviousMovingOptions, SelectAndDisplayMoves, moveDisplayingFunctions } from "./movesManager.js";
 import { EmptyGameBoard, GetPuzzle, ParseFEN, correctPuzzleMoves } from "./puzzleManager.js";
 import { DrawGameBoard, UpdateBoard, GetAllPiecePositions, DrawPawnPromotionBox } from "./boardManager.js"
-import { MoveThePiece, UndoTheMove } from "./piecesManager.js"
+import { MoveThePiece, PlayedMoves, UndoTheMove } from "./piecesManager.js"
 import { AddNewThreats, InitializeThreatBoard } from "./threatsManager.js"
-import  PlayTheBotMove from "./botManager.js";
+import PlayTheBotMove from "./botManager.js";
 
 // 1 - Menu
 // 2 - Local Game
@@ -20,6 +20,7 @@ import  PlayTheBotMove from "./botManager.js";
 // 5 - Bot
 
 let GameStates = 1;
+let puzzleBoards;
 
 const menuButtonSound = new Audio("/assets/highlight.ogg");
 const backgroundMusic = new Audio("/assets/backgroundMusic.ogg");
@@ -34,11 +35,6 @@ const soundOffButton = document.querySelector('.sound-off');
 const game = document.querySelector('.game');
 const gameMenu = document.querySelector('.game-menu');
 const turnText = document.querySelector('.turn');
-export const PlayedMoves = {
-    fullMoveCount: 1,
-    halfMoveCount: 0,
-    fullMoves: ''
-}
 export function IsGameOver() {
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
     let RemainingMoveCount = 0;
@@ -74,13 +70,46 @@ export function IsGameOver() {
     return true;
 }
 function IsMoveCorrect() {
-    return (correctPuzzleMoves.startsWith(PlayedMoves.fullMoves.trim()))
+    if (correctPuzzleMoves.includes(PlayedMoves.fullMoves)) {
+        console.log('Played Moves og', PlayedMoves.fullMoves);
+
+        return true;
+    }
+    return false;
 }
-function PlayPuzzleMove() {
-    //Find the piece in the gameBoard
-    //Find the nextRow and nextCol
-    //Find if if that piece can move to that place
-    //If it can, move it there
+async function PlayPuzzleMove() {
+    // Generate all the possible moves and see at which point the string matches.
+    let allMoves = GenerateMovesFromCurrentPosition();
+    for (let move of allMoves) {
+        const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
+        const prevChessObject = JSON.parse(JSON.stringify(Chess));
+        const clonedPlayedMoves = JSON.parse(JSON.stringify(PlayedMoves));
+        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
+        // The fullMoves string is updated.
+        await sleep(100);
+        //UpdateBoard();
+        if (IsMoveCorrect()) {
+            console.log('Correct Move for the bot');
+            Chess.isBlack = !Chess.isBlack;
+            //UpdateBoard();
+            return;
+        }
+
+        for (let i = 0; i < clonedBoard.length; i++) {
+            for (let j = 0; j < clonedBoard[i].length; j++) {
+                gameBoard[i][j] = clonedBoard[i][j];
+            }
+        }
+
+        Object.assign(Chess, prevChessObject);
+        Object.assign(PlayedMoves, clonedPlayedMoves);
+
+        GetAllPiecePositions();
+        AddNewThreats(Chess.isBlack ? 'b' : 'w');
+        Chess.isBlack = !Chess.isBlack;
+        AddNewThreats(Chess.isBlack ? 'b' : 'w');
+        Chess.isBlack = !Chess.isBlack;
+    }
 }
 export function DrawTurnName() {
     if (Chess.isBlack) {
@@ -93,44 +122,11 @@ export function DrawTurnName() {
         turnText.textContent = "White's Turn";
     }
 }
-async function sleep() {
-    return new Promise(resolve => setTimeout(resolve, 10));
+async function sleep(time = 10) {
+    return new Promise(resolve => setTimeout(resolve, time));
 }
-
-async function PlayNextMoves(depth = 2) {
-    if (depth === 0) return;
-
-    let allMoves = GenerateMovesFromCurrentPosition();
-    for (let move of allMoves) {
-        const clonedBoard = JSON.parse(JSON.stringify(gameBoard));
-        //const clonedPieces = JSON.parse(JSON.stringify(pieces));
-
-        await MoveThePiece(move.piece, move.fromRow, move.fromCol, move.toRow, move.toCol);
-        console.log(move);
-
-        Chess.isBlack = !Chess.isBlack; 
-        UpdateBoard(); 
-        await PlayNextMoves(depth - 1);
-        Chess.isBlack = !Chess.isBlack; 
-
-        await sleep();
-
-        for (let i = 0; i < clonedBoard.length; i++) {
-            for (let j = 0; j < clonedBoard[i].length; j++) {
-                gameBoard[i][j] = clonedBoard[i][j];
-            }
-        }
-        GetAllPiecePositions();
-        AddNewThreats('w');
-        AddNewThreats('b');
-
-        UpdateBoard();
-        await sleep();
-    }
-}
-
 async function HandleClickEvent(event) {
-
+    board.removeEventListener('click', HandleClickEvent);
     const target = event.target.closest('div');
     let currRow = parseInt(target.dataset.row);
     let currCol = parseInt(target.dataset.col);
@@ -148,17 +144,35 @@ async function HandleClickEvent(event) {
             alert('Game is Over');
             // return;
         };
-        if (GameStates === 5){
+        if (GameStates === 5) {
             UpdateBoard();
             await sleep();
             await PlayTheBotMove();
             DrawTurnName();
         }
         else if (GameStates === 4) {
-            // This is the puzzle mode
+            UpdateBoard();
+            // DrawTurnName();
+            
+            if (IsMoveCorrect()) {
+                alert('Correct Move');
+                await sleep(1000);
+
+                await PlayPuzzleMove();
+            }
+            else {
+                alert('Wrong Move');
+                  await sleep(1000);
+                InitializeThreatBoard();
+                AddOpponentThreatsOnTheCurrentBoard();
+                DrawGameBoard();
+                UpdateBoard();
+                DrawTurnName();
+            }
         }
     }
     UpdateBoard();
+    board.addEventListener('click', HandleClickEvent);
 }
 function RetriveGamePositionFromLocalStorage() {
     let FEN_JSON = localStorage.getItem('FEN');
@@ -216,7 +230,7 @@ function MakeFen() {
 }
 function StartLocalGame() {
     InitGame();
-    if (GameStates!==3) {
+    if (GameStates !== 3) {
         ResetChess();
         ResetGameBoard();
         InitializeThreatBoard();
@@ -228,17 +242,19 @@ function StartLocalGame() {
 
     GetAllPiecePositions();
 }
+
+
 async function StartPuzzle() {
     InitGame();
     GameStates = 4;
 
     InitializeThreatBoard();
-    await GetPuzzle();
+    let puzzleMoves = await GetPuzzle();
     AddOpponentThreatsOnTheCurrentBoard();
     DrawGameBoard();
     UpdateBoard();
     DrawTurnName();
-    console.log(gameBoard);
+    console.log(puzzleMoves);
 }
 const AddOpponentThreatsOnTheCurrentBoard = () => {
     Chess.isBlack = !Chess.isBlack;
@@ -252,7 +268,7 @@ function ResumeGame() {
     RemovePreviousMovingOptions();
     EmptyGameBoard();
     InitializeThreatBoard();
-    
+
     RetriveGamePositionFromLocalStorage();
 
     GetAllPiecePositions();
@@ -298,7 +314,7 @@ function SaveGameInLocalStorage() {
     localStorage.setItem('FEN', JSON.stringify(FEN));
 }
 window.addEventListener('beforeunload', () => {
-        SaveGameInLocalStorage();
-    }
+    SaveGameInLocalStorage();
+}
 );
 document.addEventListener("DOMContentLoaded", StartGame());

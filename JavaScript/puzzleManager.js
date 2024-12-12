@@ -1,7 +1,7 @@
 import { Chess, gameBoard, boardDimension} from "./globals.js";
-import { PlayedMoves } from "./chessManager.js";
 import { GetAllPiecePositions } from "./boardManager.js";
 import { AddNewThreats } from "./threatsManager.js";
+import { PlayedMoves } from "./piecesManager.js";
 export let correctPuzzleMoves;
 
 export const ParseFEN = (fen) => {
@@ -66,8 +66,13 @@ export async function GetPuzzle() {
     let pgnString = data.pgn;
     const indexOfMovesStart = pgnString.indexOf('\r\n\r\n');
     correctPuzzleMoves = pgnString.substring(indexOfMovesStart).trim();
-    console.log(correctPuzzleMoves);
-    return true;
+    PlayedMoves.fullMoveCount = 1;
+    if (correctPuzzleMoves.includes('...')) {
+        PlayedMoves.halfMoveCount = 0;
+    }
+    PlayedMoves.fullMoves = PlayedMoves.fullMoveCount + "... ";
+
+    return correctPuzzleMoves;
 }
 
 //fen: '4N1rk/4Q2p/5R1n/8/8/rq4Pn/3P1PK1/4R3 b - - 0 1',
