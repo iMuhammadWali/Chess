@@ -113,8 +113,7 @@ async function PlayPuzzleMove() {
 }
 export function DrawTurnName() {
     if (Chess.isBlack) {
-
-        turnText.textContent = "Black's Turn";
+        turnText.textContent = GameStates == 5 ? "Bot's Turn" : "Black's Turn";
         turnText.style.color = 'black';
     }
     else {
@@ -130,44 +129,45 @@ async function HandleClickEvent(event) {
     const target = event.target.closest('div');
     let currRow = parseInt(target.dataset.row);
     let currCol = parseInt(target.dataset.col);
-
     let piece = gameBoard[currRow][currCol];
 
     if (piece !== '' && piece !== 'validMove' && !piece.includes('capture')) {
         SelectAndDisplayMoves(piece, currRow, currCol);
     }
     else if (Chess.isPieceSelected && (piece.includes('validMove') || piece.includes('capture'))) {
-
         await MoveThePiece(Chess.selectedPiece, Chess.prevRow, Chess.prevCol, currRow, currCol);
         Chess.isBlack = !Chess.isBlack;
+
         if (IsGameOver()) {
             alert('Game is Over');
             // return;
         };
-        if (GameStates === 5) {
-            UpdateBoard();
-            await sleep();
-            await PlayTheBotMove();
-            DrawTurnName();
+        if (GameStates === 2 || GameStates === 3) {
+            // No need to do anything special.
         }
         else if (GameStates === 4) {
             UpdateBoard();
-            // DrawTurnName();
+            DrawTurnName();
             
             if (IsMoveCorrect()) {
                 await sleep(1000);
-
                 await PlayPuzzleMove();
             }
             else {
                 alert('Wrong Move. Restarting Puzzle.');
                 await sleep(1000);
-                //DisplayMenu();
-  
                 StartPuzzle();
             }
         }
+        else if (GameStates === 5) {
+            UpdateBoard();
+            await sleep();
+            await PlayTheBotMove();
+            DrawTurnName();
+        }
+
     }
+
     UpdateBoard();
     board.addEventListener('click', HandleClickEvent);
 }
@@ -239,17 +239,15 @@ function StartLocalGame() {
 
     GetAllPiecePositions();
 }
-
-
 async function StartPuzzle() {
     EmptyGameBoard();
+    DrawGameBoard();
     InitGame();
     GameStates = 4;
 
     InitializeThreatBoard();
     let puzzleMoves = await GetPuzzle();
     AddOpponentThreatsOnTheCurrentBoard();
-    DrawGameBoard();
     UpdateBoard();
     DrawTurnName();
     console.log(puzzleMoves);

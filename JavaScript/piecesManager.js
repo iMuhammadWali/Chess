@@ -156,7 +156,6 @@ export async function MoveThePiece(selectedPiece, prevRow, prevCol, currRow, cur
     let pieces = Chess.isBlack ? blackPieces : whitePieces;
     let isCapturing = false;
     if (gameBoard[currRow][currCol][0] === (Chess.isBlack ? 'w' : 'b') || gameBoard[currRow][currCol].includes('capture'))  {
-        console.log('The piece at the destination is: ', gameBoard[currRow][currCol]);
         isCapturing = true;
     }
 

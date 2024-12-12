@@ -415,7 +415,8 @@ export function SelectAndDisplayMoves(piece, currRow, currCol) {
 
         let checkGivingPieces = Chess.isBlack ? whiteCheckGivingPieces : blackCheckGivingPieces;
 
-        if (checkGivingPieces.length > 1) { //If there any pieces threatening the king, only let the king move.
+        if (checkGivingPieces.length > 1) { //If there any pieces (more than one) threatening the king,
+            // only let the king move.
             if (piece[1] === 'k')
                 moveDisplayingFunctions[piece[1]](currRow, currCol);
         }
@@ -433,7 +434,6 @@ export function UpdateMoveString(isCapturing, selectedPiece, prevCol, currRow, c
     let move = ((selectedPiece[1] == 'p') ? (prevCol == currCol) ? '' : String.fromCharCode('a'.charCodeAt(0) + prevCol) : selectedPiece[1].toUpperCase());
     
     move += captureSymbol + String.fromCharCode('a'.charCodeAt(0) + currCol) + (boardDimension - currRow) + checkSymbol;
-    console.log(PlayedMoves.halfMoveCount);
 
     if (PlayedMoves.halfMoveCount === 1) {
         PlayedMoves.fullMoveCount++;
