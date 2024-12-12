@@ -160,10 +160,10 @@ async function HandleClickEvent(event) {
                 await PlayPuzzleMove();
             }
             else {
-                alert('Wrong Move. Resetting Puzzle.');
+                alert('Wrong Move. Restarting Puzzle.');
                 await sleep(1000);
                 //DisplayMenu();
-                EmptyGameBoard();
+  
                 StartPuzzle();
             }
         }
@@ -242,6 +242,7 @@ function StartLocalGame() {
 
 
 async function StartPuzzle() {
+    EmptyGameBoard();
     InitGame();
     GameStates = 4;
 
