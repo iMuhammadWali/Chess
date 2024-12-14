@@ -72,7 +72,10 @@ export function IsGameOver() {
 function IsMoveCorrect() {
     if (correctPuzzleMoves.includes(PlayedMoves.fullMoves)) {
         console.log('Played Moves og', PlayedMoves.fullMoves);
-
+        return true;
+    }
+    if (correctPuzzleMoves == PlayedMoves.fullMoves) {
+        alert('Puzzle Solved');
         return true;
     }
     return false;
@@ -240,6 +243,8 @@ function StartLocalGame() {
     GetAllPiecePositions();
 }
 async function StartPuzzle() {
+    ResetChess();
+    PlayedMoves.fullMoves = '';
     EmptyGameBoard();
     DrawGameBoard();
     InitGame();

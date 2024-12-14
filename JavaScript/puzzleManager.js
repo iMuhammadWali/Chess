@@ -21,9 +21,6 @@ export const ParseFEN = (fen) => {
             } else {
                 Chess.isBlack = false;
             }
-            PlayedMoves.fullMoveCount = parseInt(fen[i + 9] + fen[i + 10]);
-            PlayedMoves.fullMoves = PlayedMoves.fullMoveCount + "... ";
-
             break;
         } else {
             if (isUpperCase(fen[i])) {
@@ -66,11 +63,18 @@ export async function GetPuzzle() {
     let pgnString = data.pgn;
     const indexOfMovesStart = pgnString.indexOf('\r\n\r\n');
     correctPuzzleMoves = pgnString.substring(indexOfMovesStart).trim();
-    PlayedMoves.fullMoveCount = 1;
-    if (correctPuzzleMoves.includes('...')) {
+    PlayedMoves.fullMoveCount = 0;
+
+    // PlayedMoves.fullMoves = "" + PlayedMoves.fullMoveCount;
+    //PlayedMoves.fullMoves = "1.";
+
+    if (Chess.isBlack) {
         PlayedMoves.halfMoveCount = 0;
+        PlayedMoves.fullMoves += ".. ";
     }
-    PlayedMoves.fullMoves = PlayedMoves.fullMoveCount + "... ";
+    else {
+        PlayedMoves.halfMoveCount = 1;
+    }
 
     return correctPuzzleMoves;
 }
